@@ -33,12 +33,10 @@ module TransactionalOutbox
 
   setting :db do
     setting :adapter
-    setting :connection
   end
 
   setting :producer do
     setting :adapter
-    setting :producer
   end
 
   def self.transaction(event)

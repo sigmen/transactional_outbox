@@ -10,20 +10,16 @@ module TransactionalOutbox
 
     def_delegators :@adapter, :produce_batch
 
-    def initialize(adapter = TransactionalOutbox.config.producer.adapter)
-      @adapter = get_adapter_klass(adapter).new(TransactionalOutbox.config.producer.producer)
+    def initialize
+      @adapter = get_adapter
     end
 
     private
 
-    def get_adapter_klass(adapter)
-      return Adapters::Null if TransactionalOutbox.config.test_environment
+    def get_adapter
+      return Adapters::Null.new if TransactionalOutbox.config.test_environment
 
-      case adapter.to_sym
-      when :karafka then Adapters::Karafka
-      else
-        raise TransactionalOutbox::UnsupportedMessageBrokerAdapter, "Unsupported adapter: #{adapter}"
-      end
+      TransactionalOutbox.config.producer.adapter
     end
   end
 end

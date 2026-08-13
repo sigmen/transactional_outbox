@@ -16,7 +16,7 @@ module TransactionalOutbox
 
         private
 
-        def outbox_table = TransactionalOutbox::Database.dataset(TransactionalOutbox.config.outbox_table_name)
+        def outbox_table = TransactionalOutbox::Database.new.dataset(TransactionalOutbox.config.outbox_table_name)
       end
     end
   end

@@ -1,24 +1,25 @@
 # frozen_string_literal: true
 
 require_relative "associated_worker_pool"
+require_relative "graceful_shutdown"
 
 module TransactionalOutbox
   module Relay
-    class Processor
+    class Runner
       class << self
         def start
-          pool = TransactionalOutbox::Relay::AssociatedWorkerPool.new
+          worker_pool = TransactionalOutbox::Relay::AssociatedWorkerPool.new
 
           loop do
             topics = TransactionalOutbox::Repositories::OutboxEvent.new.fetch_topics
 
             topics.each do |topic|
-              worker = pool.get_worker(topic)
+              worker = worker_pool.get_worker(topic)
 
               next if worker && worker.alive?
-              next pool.replace_worker(topic) if worker.stop?
+              next worker_pool.replace_worker(topic) if worker.stop?
 
-              pool.add_worker(topic)
+              worker_pool.add_worker(topic)
             end
 
             sleep(1)
@@ -26,7 +27,7 @@ module TransactionalOutbox
         rescue SignalException => e
           puts "Received signal: #{e}. Shutting down..."
 
-          TransactionalOutbox::Relay::GracefulShutdown.call(pool)
+          TransactionalOutbox::Relay::GracefulShutdown.call(worker_pool)
         end
       end
     end

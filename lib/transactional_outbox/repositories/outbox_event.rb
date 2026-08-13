@@ -17,7 +17,7 @@ module TransactionalOutbox
 
       private
 
-      def get_repository_klass(adapter) = TransactionalOutbox.config.test_environment ? Null : Database
+      def get_repository_klass = TransactionalOutbox.config.test_environment ? Null : Database
     end
   end
 end

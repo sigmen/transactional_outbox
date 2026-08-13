@@ -2,18 +2,18 @@
 
 module TransactionalOutbox
   module Relay
-    class AssociatedWorkerPool
+    class WorkersSet
       def initialize
-        @pool = {}
+        @workers = {}
       end
 
-      def get_worker(topic) = pool[topic]
+      def get_worker(topic) = workers[topic]
 
       def add_worker(topic)
         mutex.syncronize do
-          return if pool.key?(topic)
+          return if workers.key?(topic)
 
-          pool[topic] = spawn_thread(topic)
+          workers[topic] = spawn_thread(topic)
         end
       end
 
@@ -21,23 +21,23 @@ module TransactionalOutbox
         mutex.syncronize do
           return if get_worker(topic)&.alive?
 
-          pool[topic] = spawn_thread(topic)
+          workers[topic] = spawn_thread(topic)
         end
       end
 
       def stop_workers
-        pool.each do |_, worker|
+        workers.each do |_, worker|
           next if worker.stop?
 
           worker[:shutdown] = true
         end
       end
 
-      def all_stopped? = pool.all? { |_, worker| worker.stop? }
+      def all_stopped? = workers.all? { |_, worker| worker.stop? }
 
       private
 
-      attr_reader :pool
+      attr_reader :workers
 
       def spawn_thread(topic)
         thread = Thread.new do

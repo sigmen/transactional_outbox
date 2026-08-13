@@ -7,7 +7,7 @@ module TransactionalOutbox
         def call(worker_pool)
           shutdown_time = Time.now.utc
 
-          pool.stop_workers
+          worker_pool.stop_workers
 
           while shutdown_time + config.shutdown_waiting_time_seconds > Time.now.utc
             return config.logger.info("All workers have stopped.") if worker_pool.all_stopped?

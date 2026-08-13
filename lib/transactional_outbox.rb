@@ -15,7 +15,7 @@ require_relative "transactional_outbox/exceptions"
 require_relative "transactional_outbox/repositories/outbox_event"
 require_relative "transactional_outbox/producer"
 
-require_relative "transactional_outbox/relay/processor"
+require_relative "transactional_outbox/relay/runner"
 
 module TransactionalOutbox
   include Exceptions

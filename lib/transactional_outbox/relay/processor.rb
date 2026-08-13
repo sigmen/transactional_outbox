@@ -10,7 +10,7 @@ module TransactionalOutbox
           pool = TransactionalOutbox::Relay::AssociatedWorkerPool.new
 
           loop do
-            topics = TransactionalOutbox::Database.new.fetch_topics
+            topics = TransactionalOutbox::Repositories::OutboxEvent.new.fetch_topics
 
             topics.each do |topic|
               worker = pool.get_worker(topic)
@@ -24,7 +24,7 @@ module TransactionalOutbox
             sleep(1)
           end
         rescue SignalException => e
-          puts "Received Signal #{e}. Shutting down..."
+          puts "Received signal: #{e}. Shutting down..."
 
           TransactionalOutbox::Relay::GracefulShutdown.call(pool)
         end

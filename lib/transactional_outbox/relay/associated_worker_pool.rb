@@ -42,12 +42,12 @@ module TransactionalOutbox
       def spawn_thread(topic)
         thread = Thread.new do
           loop do
-            messages = db.fetch_batch(topic, config.batch_size)
+            messages = outbox_repository.fetch_batch(topic, config.batch_size)
 
             if messages.size > 0
               producer.produce_batch(messages)
 
-              db.delete(messages.map(&:id))
+              outbox_repository.delete(messages.map(&:id))
 
               config.logger.info("Messages sent to topic #{topic}: #{messages.size}")
             end
@@ -64,7 +64,7 @@ module TransactionalOutbox
       end
 
       def config = @config ||= TransactionalOutbox.config
-      def db = @db ||= TransactionalOutbox::Database.new
+      def outbox_repository = @outbox_repository ||= TransactionalOutbox::Repositories::OutboxEvent.new
       def producer = @producer ||= TransactionalOutbox::Producer.new
       def mutex = @mutex ||= Mutex.new
     end

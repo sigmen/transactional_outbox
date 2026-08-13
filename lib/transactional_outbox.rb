@@ -9,9 +9,10 @@ require "oj"
 
 require_relative "transactional_outbox/version"
 require_relative "transactional_outbox/constants"
+require_relative "transactional_outbox/database"
 require_relative "transactional_outbox/event"
 require_relative "transactional_outbox/exceptions"
-require_relative "transactional_outbox/database"
+require_relative "transactional_outbox/repositories/outbox_event"
 require_relative "transactional_outbox/producer"
 
 require_relative "transactional_outbox/relay/processor"
@@ -28,6 +29,7 @@ module TransactionalOutbox
   setting :wait_between_batches_seconds, default: 0.1
   setting :shutdown_waiting_time_seconds, default: 10
   setting :migrations_directory
+  setting :test_environment, default: false
 
   setting :db do
     setting :adapter
@@ -40,7 +42,7 @@ module TransactionalOutbox
   end
 
   def self.transaction(event)
-    Database.transaction do
+    Database.new.transaction do
       yield(event.new)
     end
   end

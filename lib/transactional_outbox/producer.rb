@@ -17,11 +17,12 @@ module TransactionalOutbox
     private
 
     def get_adapter_klass(adapter)
+      return Adapters::Null if TransactionalOutbox.config.test_environment
+
       case adapter.to_sym
-      when :null then Adapters::Null
       when :karafka then Adapters::Karafka
       else
-        raise TransactionalOutbox::UnsupportedAdapter, "Unsupported adapter: #{adapter}"
+        raise TransactionalOutbox::UnsupportedMessageBrokerAdapter, "Unsupported adapter: #{adapter}"
       end
     end
   end

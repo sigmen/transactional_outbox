@@ -1,0 +1,23 @@
+# TODO: Переписать миграцию используя синтаксис SQL
+Sequel.migration do
+  up do
+    run <<-SQL.squish
+      CREATE TABLE IF NOT EXISTS outbox_events (
+        id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+        aggregate_type text NOT NULL,
+        event_type text NOT NULL,
+        topic text NOT NULL,
+        headers jsonb DEFAULT '{}',
+        payload jsonb,
+        failed_at timestamp without time zone,
+        retry_num int DEFAULT 0 NOT NULL
+      );
+    SQL
+  end
+
+  down do
+    run <<-SQL.squish
+      DROP TABLE IF EXISTS outbox_events;
+    SQL
+  end
+end

@@ -41,7 +41,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "dry-configurable"
   spec.add_dependency "json-schema"
+  spec.add_dependency "oj"
   spec.add_dependency "rake", "~> 13.0"
+  spec.add_dependency "async"
 
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.21"

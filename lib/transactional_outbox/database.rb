@@ -1,22 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "database/adapters/interface"
-require_relative "database/adapters/active_record"
 require_relative "database/adapters/sequel"
 
 module TransactionalOutbox
-  module Database
+  class Database
     extend Forwardable
 
-    def_delegator :@adapter, :insert, :fetch_batch, :update_batch, :delete, :transaction
+    def_delegators :@adapter_klass, :dataset, :transaction
 
-    def initialize(adapter = TransactionalOutbox.config.db.adapter)
-      @adapter =
-        case adapter.to_sym
-        when :sequel then Adapters::Sequel
-        else
-          raise TransactionalOutbox::UnsupportedAdapter, "Unsupported adapter: #{adapter}"
-        end
+    def initialize
+      @adapter_klass = TransactionalOutbox.config.db.adapter
     end
   end
 end

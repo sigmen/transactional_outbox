@@ -3,12 +3,17 @@
 module TransactionalOutbox
   class Database
     module Adapters
-      class Sequel < Interface
-        def insert(attributes) = connection.insert(attributes)
-        def fetch_batch(topic_name) = connection.where(topic_name:).all
-        def update_batch(ids, attrs) = connection.where(id: ids).update(attrs)
-        def delete(*ids) = connection.where(id: ids).delete
+      class Sequel
+        def initialize(connection)
+          @connection = connection
+        end
+
+        def dataset(table) = connection[table]
         def transaction(*options, &) = connection.transaction(*options, &)
+
+        private
+
+        attr_reader :connection
       end
     end
   end

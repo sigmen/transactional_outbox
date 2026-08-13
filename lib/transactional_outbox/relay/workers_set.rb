@@ -10,19 +10,15 @@ module TransactionalOutbox
       def get_worker(topic) = workers[topic]
 
       def add_worker(topic)
-        mutex.syncronize do
-          return if workers.key?(topic)
+        return if workers.key?(topic)
 
-          workers[topic] = spawn_thread(topic)
-        end
+        workers[topic] = spawn_thread(topic)
       end
 
       def recover_worker(topic)
-        mutex.syncronize do
-          return if get_worker(topic)&.alive?
+        return if get_worker(topic)&.alive?
 
-          workers[topic] = spawn_thread(topic)
-        end
+        workers[topic] = spawn_thread(topic)
       end
 
       def stop_workers
@@ -66,7 +62,6 @@ module TransactionalOutbox
       def config = @config ||= TransactionalOutbox.config
       def outbox_repository = @outbox_repository ||= TransactionalOutbox::Repositories::OutboxEvent.new
       def producer = @producer ||= TransactionalOutbox::Producer.new
-      def mutex = @mutex ||= Mutex.new
     end
   end
 end

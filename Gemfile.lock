@@ -2,6 +2,9 @@ PATH
   remote: .
   specs:
     transactional_outbox (0.1.0)
+      dry-configurable
+      json-schema
+      rake (~> 13.0)
 
 GEM
   remote: https://rubygems.org/
@@ -74,9 +77,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  dry-configurable
-  json-schema
-  rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)
   transactional_outbox!

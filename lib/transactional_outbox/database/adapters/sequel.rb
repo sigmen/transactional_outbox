@@ -8,7 +8,7 @@ module TransactionalOutbox
         def fetch_batch(topic_name) = connection.where(topic_name:).all
         def update_batch(ids, attrs) = connection.where(id: ids).update(attrs)
         def delete(*ids) = connection.where(id: ids).delete
-        def transaction(...) = connection.transaction(...) { yield }
+        def transaction(*options, &) = connection.transaction(*options, &)
       end
     end
   end

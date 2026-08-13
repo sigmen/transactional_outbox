@@ -38,4 +38,11 @@ Gem::Specification.new do |spec|
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+
+  spec.add_dependency "dry-configurable"
+  spec.add_dependency "json-schema"
+  spec.add_dependency "rake", "~> 13.0"
+
+  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "rubocop", "~> 1.21"
 end

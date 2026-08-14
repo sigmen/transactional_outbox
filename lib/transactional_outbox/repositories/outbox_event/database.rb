@@ -7,7 +7,9 @@ module TransactionalOutbox
         def insert(attributes) = outbox_table.insert(attributes)
 
         def fetch_batch(topic_name, batch_size)
-          outbox_table.where(topic_name:).for_update.skip_locked.limit(batch_size).order(:created_at).all
+          outbox_table.where(topic_name:).limit(batch_size).order(:created_at)
+            .then { database.select_for_update(_1) }
+            .then(&:all)
         end
 
         def update_batch(ids, attrs) = outbox_table.where(id: ids).update(attrs)
@@ -16,7 +18,8 @@ module TransactionalOutbox
 
         private
 
-        def outbox_table = TransactionalOutbox::Database.new.dataset(TransactionalOutbox.config.outbox_table_name)
+        def database = @database ||= TransactionalOutbox::Database.new
+        def outbox_table = database.dataset(TransactionalOutbox.config.outbox_table_name)
       end
     end
   end

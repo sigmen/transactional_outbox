@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "producer/adapters/interface"
-require_relative "producer/adapters/karafka"
-require_relative "producer/adapters/null"
-
 module TransactionalOutbox
   class Producer
     extend Forwardable
@@ -11,15 +7,23 @@ module TransactionalOutbox
     def_delegators :@adapter, :produce_batch
 
     def initialize
-      @adapter = get_adapter
+      @adapter = Adapters.resolve(fetch_adapter).new(fetch_client)
     end
 
     private
 
-    def get_adapter
-      return Adapters::Null.new if TransactionalOutbox.config.test_environment
+    def config = @config ||= TransactionalOutbox.config
 
-      TransactionalOutbox.config.producer.adapter
+    def fetch_adapter
+      return :null if config.test_environment
+
+      config.producer.adapter.to_sym
+    end
+
+    def fetch_client
+      return if config.test_environment
+
+      config.producer.client
     end
   end
 end

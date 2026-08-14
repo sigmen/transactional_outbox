@@ -4,11 +4,11 @@ module TransactionalOutbox
   module Repositories
     class OutboxEvent
       class Interface
-        def insert(_attributes) = raise NotImplemetedError
-        def fetch_batch(_topic_name) = raise NotImplemetedError
-        def fetch_topics = raise NotImplemetedError
-        def update_batch(_ids, _attrs) = raise NotImplemetedError
-        def delete(*_ids) = raise NotImplemetedError
+        def insert(_attributes) = raise NotImplementedError
+        def fetch_batch(_topic_name) = raise NotImplementedError
+        def fetch_topics = raise NotImplementedError
+        def update_batch(_ids, _attrs) = raise NotImplementedError
+        def delete(_ids) = raise NotImplementedError
       end
     end
   end

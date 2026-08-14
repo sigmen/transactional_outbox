@@ -10,7 +10,14 @@ module TransactionalOutbox
 
         private
 
-        def db = @db ||= Sequel::Model.db if defined?(Sequel)
+        def config = @config ||= TransactionalOutbox.config
+        def db = @db ||= get_db_object
+
+        def get_db_object
+          return unless config.db.adapter == :sequel && defined?(Sequel)
+
+          Sequel::Model.db
+        end
       end
     end
   end

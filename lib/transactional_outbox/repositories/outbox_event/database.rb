@@ -14,7 +14,7 @@ module TransactionalOutbox
 
         def update_batch(ids, attrs) = outbox_table.where(id: ids).update(attrs)
         def fetch_topics = outbox_table.select(:topic).distinct.map(&:topic)
-        def delete(*ids) = outbox_table.where(id: ids).delete
+        def delete(ids) = outbox_table.where(id: ids).delete
 
         private
 

@@ -17,6 +17,7 @@ require_relative "transactional_outbox/database/adapters/active_record"
 require_relative "transactional_outbox/database/adapters/sequel"
 require_relative "transactional_outbox/event"
 require_relative "transactional_outbox/exceptions"
+require_relative "transactional_outbox/exponential_backoff"
 require_relative "transactional_outbox/repositories/outbox_event"
 require_relative "transactional_outbox/producer"
 require_relative "transactional_outbox/producer/adapters"
@@ -46,6 +47,7 @@ module TransactionalOutbox
   setting :shutdown_waiting_time_seconds, default: 10
   setting :migrations_directory
   setting :test_environment, default: false
+  setting :max_relay_runner_retries_count, default: 5
 
   setting :db do
     setting :adapter

@@ -11,6 +11,8 @@ module TransactionalOutbox
 
           while shutdown_time + config.shutdown_waiting_time_seconds > Time.now.utc
             return config.logger.info("All workers have stopped.") if workers_set.all_stopped?
+
+            sleep(0.1)
           end
         end
 

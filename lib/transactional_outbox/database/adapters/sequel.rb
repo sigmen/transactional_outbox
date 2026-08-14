@@ -2,18 +2,15 @@
 
 module TransactionalOutbox
   class Database
-    module Adapters
-      class Sequel
-        def initialize(connection)
-          @connection = connection
-        end
-
-        def dataset(table) = connection[table]
-        def transaction(*options, &) = connection.transaction(*options, &)
+    class Adapters
+      class Sequel < Interface
+        def dataset(table) = db[table]
+        def transaction(*options, &) = db.transaction(*options, &)
+        def select_for_update(dataset) = dataset.for_update.skip_locked
 
         private
 
-        attr_reader :connection
+        def db = @db ||= Sequel::Model.db if defined?(Sequel)
       end
     end
   end

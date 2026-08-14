@@ -39,7 +39,7 @@ module TransactionalOutbox
     def save(event) = TransactionalOutbox::Repositories::OutboxEvent.new.insert(event)
 
     def validate_event(schema, payload)
-      return true unless config.schema.nil?
+      return true if config.schema.nil?
 
       errors = JSON::Validator.fully_validate(schema, payload)
 
@@ -51,7 +51,7 @@ module TransactionalOutbox
     def validate_event_type(event_type)
       return if TransactionalOutbox::Constants::EVENT_TYPES.include?(event_type.to_sym)
 
-      raise TransactionalOutbox::UnsupportedEventType, "Unsupported event type: #{event_type}"
+      raise TransactionalOutbox::UnsupportedEventTypeError, "Unsupported event type: #{event_type}"
     end
   end
 end

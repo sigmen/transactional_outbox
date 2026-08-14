@@ -7,7 +7,7 @@ module TransactionalOutbox
         def resolve(adapter)
           container.resolve(adapter)
         rescue Dry::Container::KeyError
-          raise TransactionalOutbox::UnknownProducerAdapter, "Unknown producer adapter: #{adapter}"
+          raise TransactionalOutbox::UnknownProducerAdapterError, "Unknown producer adapter: #{adapter}"
         end
 
         def register(adapter, klass)

@@ -2,13 +2,13 @@
 
 module TransactionalOutbox
   class Producer
-    module Adapters
+    class Adapters
       class Interface
         def initialize(producer)
           @producer = producer
         end
 
-        def produce_batch(_batch) = raise NotImplemetedError
+        def produce_batch(_batch) = raise NotImplementedError
 
         private
 

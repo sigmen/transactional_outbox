@@ -4,10 +4,6 @@ module TransactionalOutbox
   module Repositories
     class OutboxEvent
       class Null < Interface
-        def initialize
-          @dataset = []
-        end
-
         def insert(attributes) = dataset << attributes.merge(id:)
 
         def update_batch(ids, attrs)
@@ -21,19 +17,21 @@ module TransactionalOutbox
         end
 
         def fetch_batch(topic_name, batch_size) = dataset.select { |row| row[:topic] == topic_name }.first(batch_size)
-        def fetch_topics = dataset.map(&:topic)
+        def fetch_topics = dataset.map { |row| row[:topic] }
 
-        def delete(*ids)
+        def delete(ids)
           ids_map = ids.to_h { |id| [id, true] }
 
           dataset.delete_if { |row| ids_map[row[:id]] }
+
+          true
         end
 
         private
 
-        attr_reader :dataset
-
         def id = SecureRandom.uuid
+        def database = @database ||= TransactionalOutbox::Database.new
+        def dataset = database.dataset
       end
     end
   end

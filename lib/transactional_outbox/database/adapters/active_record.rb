@@ -11,8 +11,13 @@ module TransactionalOutbox
 
         private
 
-        def abstract_model
-          @abstract_model ||= Class.new(ActiveRecord::Base) { self.table_name = table } if defined?(ActiveRecord::Base)
+        def config = @config ||= TransactionalOutbox.config
+        def abstract_model = @abstract_model ||= build_abstract_model
+
+        def build_abstract_model
+          return unless config.db.adapter == :active_record && defined?(ActiveRecord::Base)
+
+          Class.new(ActiveRecord::Base) { self.table_name = table }
         end
       end
     end

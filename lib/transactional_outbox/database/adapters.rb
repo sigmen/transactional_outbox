@@ -7,7 +7,7 @@ module TransactionalOutbox
         def resolve(adapter)
           container.resolve(adapter)
         rescue Dry::Container::KeyError
-          raise TransactionalOutbox::UnknownDatabaseAdapter, "Unknown database adapter: #{adapter}"
+          raise TransactionalOutbox::UnknownDatabaseAdapterError, "Unknown database adapter: #{adapter}"
         end
 
         def register(adapter, klass)

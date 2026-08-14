@@ -2,7 +2,7 @@
 
 module TransactionalOutbox
   class Producer
-    module Adapters
+    class Adapters
       class Null < Interface
         def produce_batch(_batch) = TransactionalOutbox.config.logger.info("Batch produced")
       end

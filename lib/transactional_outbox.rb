@@ -12,6 +12,7 @@ require_relative "transactional_outbox/constants"
 require_relative "transactional_outbox/database"
 require_relative "transactional_outbox/database/adapters"
 require_relative "transactional_outbox/database/adapters/interface"
+require_relative "transactional_outbox/database/adapters/null"
 require_relative "transactional_outbox/database/adapters/active_record"
 require_relative "transactional_outbox/database/adapters/sequel"
 require_relative "transactional_outbox/event"
@@ -25,8 +26,12 @@ require_relative "transactional_outbox/producer/adapters/karafka"
 
 require_relative "transactional_outbox/relay/runner"
 
+TransactionalOutbox::Database::Adapters.register(:null, TransactionalOutbox::Database::Adapters::Null)
 TransactionalOutbox::Database::Adapters.register(:sequel, TransactionalOutbox::Database::Adapters::Sequel)
 TransactionalOutbox::Database::Adapters.register(:active_record, TransactionalOutbox::Database::Adapters::ActiveRecord)
+
+TransactionalOutbox::Producer::Adapters.register(:null, TransactionalOutbox::Producer::Adapters::Null)
+TransactionalOutbox::Producer::Adapters.register(:karafka, TransactionalOutbox::Producer::Adapters::Karafka)
 
 module TransactionalOutbox
   include Exceptions

@@ -43,7 +43,9 @@ module TransactionalOutbox
             if messages.size > 0
               producer.produce_batch(messages)
 
-              outbox_repository.delete(messages.map(&:id))
+              mutex.synchronize do
+                outbox_repository.delete(messages.map { |x| x[:id] })
+              end
 
               config.logger.info("Messages sent to topic #{topic}: #{messages.size}")
             end
@@ -62,6 +64,7 @@ module TransactionalOutbox
       def config = @config ||= TransactionalOutbox.config
       def outbox_repository = @outbox_repository ||= TransactionalOutbox::Repositories::OutboxEvent.new
       def producer = @producer ||= TransactionalOutbox::Producer.new
+      def mutex = @mutext ||= Mutex.new
     end
   end
 end

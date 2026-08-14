@@ -64,7 +64,7 @@ module TransactionalOutbox
       def config = @config ||= TransactionalOutbox.config
       def outbox_repository = @outbox_repository ||= TransactionalOutbox::Repositories::OutboxEvent.new
       def producer = @producer ||= TransactionalOutbox::Producer.new
-      def mutex = @mutext ||= Mutex.new
+      def mutex = @mutex ||= Mutex.new
     end
   end
 end

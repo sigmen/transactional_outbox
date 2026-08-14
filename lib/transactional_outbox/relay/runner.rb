@@ -16,10 +16,11 @@ module TransactionalOutbox
             topics.each do |topic|
               worker = workers_set.get_worker(topic)
 
-              next if worker && worker.alive?
-              next workers_set.replace_worker(topic) if worker.stop?
+              next workers_set.add_worker(topic) if worker.nil?
 
-              workers_set.add_worker(topic)
+              next worker.alive?
+
+              workers_set.replace_worker(topic)
             end
 
             sleep(1)

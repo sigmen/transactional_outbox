@@ -15,4 +15,9 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  config.after(:each) do
+    TransactionalOutbox::Database::Adapters::Null.clear_store
+    TransactionalOutbox::Producer::Adapters::Null.clear_store
+  end
 end

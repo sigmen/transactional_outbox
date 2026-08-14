@@ -6,12 +6,13 @@ module TransactionalOutbox
       class Null < Interface
         class << self
           def messages = @messages ||= {}
+          def clear_store = @messages = {}
         end
 
         def produce_batch(topic, batch)
-          dataset = messages[topic] ||= []
+          messages = self.class.messages[topic] ||= []
 
-          dataset.concat(messages)
+          messages.concat(batch)
 
           TransactionalOutbox.config.logger.info("Batch produced")
         end

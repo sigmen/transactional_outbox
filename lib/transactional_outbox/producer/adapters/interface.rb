@@ -2,7 +2,7 @@
 
 module TransactionalOutbox
   class Producer
-    module Adapters
+    class Adapters
       class Interface
         def initialize(producer)
           @producer = producer

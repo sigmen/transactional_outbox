@@ -6,9 +6,6 @@ module TransactionalOutbox
       class Null < Interface
         class << self
           def dataset = @dataset ||= {}
-          def clear
-            @dataset[table] = value
-          end
         end
 
         def dataset = self.class.dataset[table] ||= []

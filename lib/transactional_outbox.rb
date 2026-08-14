@@ -6,6 +6,7 @@ require "dry-container"
 require "dry-configurable"
 require "json-schema"
 require "oj"
+require "securerandom"
 
 require_relative "transactional_outbox/version"
 require_relative "transactional_outbox/constants"

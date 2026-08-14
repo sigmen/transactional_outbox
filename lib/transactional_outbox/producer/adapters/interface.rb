@@ -8,7 +8,7 @@ module TransactionalOutbox
           @producer = producer
         end
 
-        def produce_batch(_batch) = raise NotImplemetedError
+        def produce_batch(_batch) = raise NotImplementedError
 
         private
 

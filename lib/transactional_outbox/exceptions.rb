@@ -2,9 +2,10 @@
 
 module TransactionalOutbox
   module Exceptions
-    class UnsupportedEventType < StandardError; end
+    class UnsupportedEventTypeError < StandardError; end
     class InvalidPayloadError < StandardError; end
-    class UnknownDatabaseAdapter < StandardError; end
-    class UnknownProducerAdapter < StandardError; end
+    class UnknownDatabaseAdapterError < StandardError; end
+    class UnknownProducerAdapterError < StandardError; end
+    class ImpossibleToGenerateMigrationError < StandardError; end
   end
 end

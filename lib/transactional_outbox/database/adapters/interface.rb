@@ -8,9 +8,9 @@ module TransactionalOutbox
           @table = table
         end
 
-        def dataset = raise NotImplemetedError
-        def transaction(*_options, &) = raise NotImplemetedError
-        def select_for_update(_dataset) = raise NotImplemetedError
+        def dataset = raise NotImplementedError
+        def transaction(*_options, &) = raise NotImplementedError
+        def select_for_update(_dataset) = raise NotImplementedError
 
         private
 

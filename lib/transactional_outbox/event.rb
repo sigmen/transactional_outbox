@@ -67,7 +67,7 @@ module TransactionalOutbox
       validate_event_type(event_type)
       validate_event(config.schema, payload)
 
-      config.message_builder.build(self, payload, context)
+      config.message_builder.build(self.class.config, payload, context)
     end
 
     def build_batch(contexts) = contexts.map { build_message(_1) }

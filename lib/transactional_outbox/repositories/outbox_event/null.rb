@@ -4,7 +4,9 @@ module TransactionalOutbox
   module Repositories
     class OutboxEvent
       class Null < Interface
-        def insert(attributes) = dataset << attributes.merge(id:)
+        def insert(rows)
+          rows.map { |attrs| attrs.merge(id:) }.tap { |identified_rows| dataset.concat(identified_rows) }
+        end
 
         def update_batch(ids, attrs)
           ids_map = ids.to_h { |id| [id, true] }

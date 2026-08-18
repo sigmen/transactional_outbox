@@ -32,7 +32,7 @@ module TransactionalOutbox
               messages = outbox_repository.fetch_batch(topic, config.batch_size)
 
               if messages.size > 0
-                producer.produce_batch(messages)
+                producer.produce_batch(topic, messages)
 
                 outbox_repository.delete(messages.map { |x| x[:id] })
 

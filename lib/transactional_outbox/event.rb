@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
 require_relative "event/message_builder"
+require_relative "event/contextable"
+require_relative "event/payloadable"
 
 module TransactionalOutbox
   class Event
     extend Dry::Configurable
+    extend Contextable
+    extend Payloadable
 
     setting :schema
+    setting :aggregate_type
     setting :event_type
     setting :topic
     setting :message_builder, default: MessageBuilder
@@ -17,26 +22,27 @@ module TransactionalOutbox
       end
     end
 
-    def create!(payload, *extra_args)
-      event = build(payload, *extra_args)
+    def create!(context)
+      validate_context!(context)
 
-      save(event)
+      event = build_message(context)
+
+      save([event])
     end
 
-    def build(payload, *extra_args)
-      event_type = config.event_type
+    def create_batch!(contexts)
+      validate_contexts!(contexts)
 
-      validate_event_type(event_type)
-      validate_event(config.schema, payload)
+      batch = build_batch(contexts)
 
-      config.message_builder.build(self, payload, *extra_args)
+      save(batch)
     end
 
     private
 
     def config = @config ||= self.class.config
 
-    def save(event) = TransactionalOutbox::Repositories::OutboxEvent.new.insert(event)
+    def save(rows) = TransactionalOutbox::Repositories::OutboxEvent.new.insert(rows)
 
     def validate_event(schema, payload)
       return true if config.schema.nil?
@@ -53,5 +59,17 @@ module TransactionalOutbox
 
       raise TransactionalOutbox::UnsupportedEventTypeError, "Unsupported event type: #{event_type}"
     end
+
+    def build_message(context)
+      event_type = config.event_type
+      payload = build_payload(context)
+
+      validate_event_type(event_type)
+      validate_event(config.schema, payload)
+
+      config.message_builder.build(self, payload, context)
+    end
+
+    def build_batch(contexts) = contexts.map { build_message(_1) }
   end
 end

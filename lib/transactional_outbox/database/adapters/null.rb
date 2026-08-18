@@ -5,8 +5,8 @@ module TransactionalOutbox
     class Adapters
       class Null < Interface
         class << self
-          def dataset = @dataset ||= {}
-          def clear_store = @dataset = {}
+          def dataset = @__dataset__ ||= {}
+          def clear_store = @__dataset__ = {}
         end
 
         def dataset = self.class.dataset[table] ||= []

@@ -4,7 +4,18 @@ module TransactionalOutbox
   class Producer
     class Adapters
       class Null < Interface
-        def produce_batch(_batch) = TransactionalOutbox.config.logger.info("Batch produced")
+        class << self
+          def messages = @messages ||= {}
+          def clear_store = @messages = {}
+        end
+
+        def produce_batch(topic, batch)
+          messages = self.class.messages[topic] ||= []
+
+          messages.concat(batch)
+
+          TransactionalOutbox.config.logger.info("Batch produced")
+        end
       end
     end
   end

@@ -4,6 +4,7 @@ require "forwardable"
 
 require "dry-container"
 require "dry-configurable"
+require "dry-validation"
 require "json-schema"
 require "oj"
 require "securerandom"

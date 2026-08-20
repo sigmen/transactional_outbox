@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TransactionalOutbox::Relay::WorkersSet::Worker do
+RSpec.describe TransactionalOutbox::Relay::WorkerSet::Worker do
   let(:worker) { described_class.new(topic) }
   let(:topic) { "test-topic" }
 

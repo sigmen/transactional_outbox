@@ -4,7 +4,7 @@ require_relative "../event_processor"
 
 module TransactionalOutbox
   module Relay
-    class WorkersSet
+    class WorkerSet
       class Worker
         attr_reader :topic, :db, :producer
 

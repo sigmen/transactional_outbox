@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "workers_set/worker"
+require_relative "worker_set/worker"
 
 module TransactionalOutbox
   module Relay
-    class WorkersSet
+    class WorkerSet
       def initialize
         @workers = {}
       end

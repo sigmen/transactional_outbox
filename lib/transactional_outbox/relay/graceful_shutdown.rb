@@ -4,13 +4,13 @@ module TransactionalOutbox
   module Relay
     class GracefulShutdown
       class << self
-        def call(workers_set)
+        def call(worker_set)
           shutdown_time = Time.now.utc
 
-          workers_set.stop_workers
+          worker_set.stop_workers
 
           while shutdown_time + config.shutdown_waiting_time_seconds > Time.now.utc
-            if workers_set.all_stopped?
+            if worker_set.all_stopped?
               config.logger.info("All workers have stopped.")
 
               return true

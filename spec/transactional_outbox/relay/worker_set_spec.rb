@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TransactionalOutbox::Relay::WorkersSet do
+RSpec.describe TransactionalOutbox::Relay::WorkerSet do
   subject(:get_worker) { instance.get_worker(topic) }
   subject(:add_worker) { instance.add_worker(topic) }
 

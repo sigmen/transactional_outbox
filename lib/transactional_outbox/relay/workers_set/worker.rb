@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../fail_batch"
-
 module TransactionalOutbox
   module Relay
     class WorkersSet
@@ -63,10 +61,6 @@ module TransactionalOutbox
           db.delete_events(events.map { |x| x[:id] })
 
           config.logger.info("Events have sent to topic #{topic}: #{events.size}")
-        rescue StandardError => e
-          TransactionalOutbox::Relay::FailBatch.new(events).call
-
-          raise e
         end
 
         def mark_as_stopped = thread[:stopped] = true

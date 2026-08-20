@@ -7,11 +7,13 @@ module TransactionalOutbox
         def transaction(*options, &) = abstract_model.transaction(*options, &)
 
         def fetch_events(topic_name, batch_size)
-          abstract_model.where(topic_name:).limit(batch_size).order(:created_at).lock("FOR UPDATE SKIP LOCKED").all
-        end
-
-        def fail_events(ids)
-          abstract_model.where(id: ids).update()
+          abstract_model
+            .where(topic_name:)
+            .where("next_retry_at IS NULL OR next_retry_at < current_timestamp")
+            .order(:created_at)
+            .limit(batch_size)
+            .lock("FOR UPDATE SKIP LOCKED")
+            .all
         end
 
         def insert_events(attributes) = abstract_model.insert_all(attributes)

@@ -6,11 +6,17 @@ module TransactionalOutbox
       class Sequel < Interface
         def transaction(*options, &) = dataset.transaction(*options, &)
         def insert_events(attributes) = dataset.insert(attributes)
-        def fail_events(ids) = dataset.where(id: ids).update(attrs)
         def fetch_topics = dataset.select(:topic).distinct.map(&:topic)
         def delete_events(ids) = dataset.where(id: ids).delete
+
         def fetch_events(topic_name, batch_size)
-          dataset.where(topic_name:).limit(batch_size).order(:created_at).for_update.skip_locked.all
+          dataset
+            .where(topic_name:)
+            .where(Sequel.lit("next_retry_at IS NULL OR next_retry_at < current_timestamp"))
+            .order(:created_at)
+            .limit(batch_size)
+            .for_update.skip_locked
+            .all
         end
 
         private

@@ -11,10 +11,10 @@ class CreateOutboxEvents < ActiveRecord::Migration[8.1]
       t.jsonb :payload, null: false, default: '{}'
       t.datetime :failed_at
       t.integer :retry_num, null: false, default: 0
+      t.datetime :next_retry_at
       t.datetime :created_at, null: false, default: "now()"
     end
 
     add_index :outbox_events, :topic
-    add_index :outbox_events, :failed_at
   end
 end

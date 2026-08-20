@@ -7,7 +7,7 @@ module TransactionalOutbox
     def_delegators :@adapter, :dataset, :transaction
 
     def initialize
-      @adapter = Adapters.resolve(fetch_adapter).new(config.outbox_table_name)
+      @adapter = TransactionalOutbox::Adapters::Database.resolve(fetch_adapter).new(config.outbox_table_name)
     end
 
     private

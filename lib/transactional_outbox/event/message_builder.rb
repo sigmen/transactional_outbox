@@ -3,8 +3,14 @@
 module TransactionalOutbox
   class Event
     class MessageBuilder
-      def self.build(event_config, payload, *_context)
-        { topic: event_config.topic, event_type: event_config.event_type.to_s, payload: }
+      def self.build(event_config, payload, _context)
+        {
+          topic: event_config.topic,
+          aggregate_type: event_config.aggregate_type,
+          event_type: event_config.event_type.to_s,
+          headers: {},
+          payload:
+        }
       end
     end
   end

@@ -30,7 +30,7 @@ module TransactionalOutbox
       save([event])
     end
 
-    def create_batch!(contexts)
+    def bulk_create!(contexts)
       validate_contexts!(contexts)
 
       batch = build_batch(contexts)
@@ -54,22 +54,17 @@ module TransactionalOutbox
       raise TransactionalOutbox::InvalidPayloadError, errors.join(", ")
     end
 
-    def validate_event_type(event_type)
-      return if TransactionalOutbox::Constants::EVENT_TYPES.include?(event_type.to_sym)
-
-      raise TransactionalOutbox::UnsupportedEventTypeError, "Unsupported event type: #{event_type}"
-    end
-
     def build_message(context)
       event_type = config.event_type
       payload = build_payload(context)
 
-      validate_event_type(event_type)
       validate_event(config.schema, payload)
 
       config.message_builder.build(self.class.config, payload, context)
     end
 
     def build_batch(contexts) = contexts.map { build_message(_1) }
+
+    def validate_contexts!(contexts) = contexts.each { |context| validate_context!(context) }
   end
 end

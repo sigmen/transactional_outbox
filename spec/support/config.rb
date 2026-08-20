@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "logger"
 
 TransactionalOutbox.configure do |config|

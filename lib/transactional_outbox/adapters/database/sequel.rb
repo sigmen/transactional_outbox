@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  class Database
-    class Adapters
+  module Adapters
+    class Database
       class Sequel < Interface
         def dataset(table) = db[table]
         def transaction(*options, &) = db.transaction(*options, &)

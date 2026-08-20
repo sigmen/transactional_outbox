@@ -32,7 +32,7 @@ module TransactionalOutbox
         def config = @config ||= TransactionalOutbox.config
 
         def spawn_thread
-          TransactionalOutbox.monitor.publish("worker.run", { topic: })
+          TransactionalOutbox::Relay.monitor.publish("worker.run", { topic: })
 
           Thread.new do
             loop do
@@ -60,7 +60,7 @@ module TransactionalOutbox
         def mark_thread_as_stopped
           Thread.current[:stopped] = true
 
-          TransactionalOutbox.monitor.publish("worker.stopped", { topic: })
+          TransactionalOutbox::Relay.monitor.publish("worker.stopped", { topic: })
         end
       end
     end

@@ -9,10 +9,10 @@ module TransactionalOutbox
     def self.next_migration_number(_dirname) = Time.now.utc.strftime("%Y%m%d%H%M%S")
 
     def create_migration_file
-      adapter = TransactionalOutbox.config.db.adapter.to_sym
+      adapter = TransactionalOutbox.config.db.adapter
 
-      if !TransactionalOutbox::Constants::ALLOWED_FOR_GEN_MIGRATION_ADAPTERS.include?(adapter)
-        raise ImpossibleToGenerateMigrationError, "Impossible to generate migration for adapter: #{adapter}"
+      if !File.exist?("templates/#{adapter}.rb.erb")
+        raise TransactionalOutbox::MigrationFileNotExistsError, "Migration template not exists for adapter: #{adapter}"
       end
 
       migration_name = "create_outbox_events_table"

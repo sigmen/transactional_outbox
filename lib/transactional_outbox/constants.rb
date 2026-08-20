@@ -2,8 +2,15 @@
 
 module TransactionalOutbox
   module Constants
-    EVENT_TYPES = %i[created updated deleted].freeze
-    ALLOWED_FOR_GEN_MIGRATION_ADAPTERS = %i[active_record sequel].freeze
+    BASE_DATABASE_ADAPTERS = %w[active_record sequel null].freeze
+    BASE_PRODUCER_ADAPTERS = %w[karafka null].freeze
     DEFAULT_PAYLOAD_BUILDER_BLOCK = -> { _1 }
+
+    RUNNER_INIT_MONITOR_EVENT = "runner.init".freeze
+    RUNNER_STOPPED_MONITOR_EVENT = "runner.stopped".freeze
+    WORKER_RUN_MONITOR_EVENT = "worker.run".freeze
+    WORKER_STOPPED_MONITOR_EVENT = "worker.stopped".freeze
+    WORKER_EVENTS_PROCESSED_MONITOR_EVENT = "worker.events.processed".freeze
   end
 end
+

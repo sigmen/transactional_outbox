@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe TransactionalOutbox::Relay::GracefulShutdown do
-  subject(:shutdown) { described_class.call(workers_set) }
+  subject(:shutdown) { described_class.call(worker_set) }
 
-  let(:workers_set) do
-    instance_double(TransactionalOutbox::Relay::WorkersSet, stop_workers: true, all_stopped?: all_stopped)
+  let(:worker_set) do
+    instance_double(TransactionalOutbox::Relay::WorkerSet, stop_workers: true, all_stopped?: all_stopped)
   end
 
   let(:all_stopped) { true }
@@ -19,7 +19,7 @@ RSpec.describe TransactionalOutbox::Relay::GracefulShutdown do
   it "requests all workers to stop" do
     shutdown
 
-    expect(workers_set).to have_received(:stop_workers)
+    expect(worker_set).to have_received(:stop_workers)
   end
 
   it "returns true as soon as every worker has stopped" do

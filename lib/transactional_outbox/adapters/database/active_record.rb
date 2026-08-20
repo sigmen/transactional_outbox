@@ -2,8 +2,8 @@
 
 
 module TransactionalOutbox
-  class Database
-    class Adapters
+  module Adapters
+    class Database
       class ActiveRecord < Interface
         def dataset = abstract_model
         def transaction(*options, &) = abstract_model.transaction(*options, &)

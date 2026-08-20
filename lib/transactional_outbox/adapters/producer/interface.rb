@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  class Producer
-    class Adapters
+  module Adapters
+    class Producer
       class Interface
         def initialize(producer)
           @producer = producer

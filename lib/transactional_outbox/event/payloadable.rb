@@ -5,11 +5,14 @@ module TransactionalOutbox
     module Payloadable
       def self.extended(klass)
         klass.define_method(:build_payload) do |context|
-          self.class.instance_variable_get(:@__payload_builder__).call(context)
+          builder = self.class.instance_variable_get(:@__payload_builder__) ||
+            TransactionalOutbox::Constants::DEFAULT_PAYLOAD_BUILDER_BLOCK
+
+          builder.call(context)
         end
       end
 
-      def payload(&block) = @__payload_builder__ ||= block || TransactionalOutbox::Contants::DEFAULT_PAYLOAD_BUILDER_BLOCK
+      def payload(&block) = @__payload_builder__ ||= block
     end
   end
 end

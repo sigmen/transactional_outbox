@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  class Producer
-    class Adapters
+  module Adapters
+    class Producer
       class Null < Interface
         class << self
           def messages = @messages ||= {}

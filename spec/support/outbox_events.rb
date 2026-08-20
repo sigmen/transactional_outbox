@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 def gen_messages(topic, count)
-  repo = TransactionalOutbox::Repositories::OutboxEvent.new
+  repo = TransactionalOutbox::Database.new
 
   count.times do
-    repo.insert({ topic:, payload: {} })
+    repo.insert_events({ topic:, payload: {} })
   end
 end

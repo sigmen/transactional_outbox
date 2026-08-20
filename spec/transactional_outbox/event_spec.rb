@@ -28,7 +28,7 @@ RSpec.describe TransactionalOutbox::Event do
 
   shared_context "success way" do
     it "saves an event" do
-      expect { subject }.to change(database.dataset, :size).from(0).to(1)
+      expect { subject }.to change(dataset, :size).from(0).to(1)
     end
 
     it "returns correct event" do
@@ -44,11 +44,12 @@ RSpec.describe TransactionalOutbox::Event do
     end
 
     it "doesnt save an event" do
-      expect { subject rescue nil }.not_to change(database.dataset, :size)
+      expect { subject rescue nil }.not_to change(dataset, :size)
     end
   end
 
   let(:database) { TransactionalOutbox::Database.new }
+  let(:dataset) { TransactionalOutbox::Adapters::Database::Null.dataset }
 
   let(:event_class) do
     define_event(payload_schema, aggregate_type, event_type, topic, message_builder_class, payload_block)

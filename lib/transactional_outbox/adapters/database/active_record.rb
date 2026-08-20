@@ -1,23 +1,29 @@
 # frozen_string_literal: true
 
-
 module TransactionalOutbox
   module Adapters
     class Database
       class ActiveRecord < Interface
-        def dataset = abstract_model
         def transaction(*options, &) = abstract_model.transaction(*options, &)
-        def select_for_update(dataset) = dataset.lock("FOR UPDATE SKIP LOCKED")
+
+        def fetch_events(topic_name, batch_size)
+          abstract_model.where(topic_name:).limit(batch_size).order(:created_at).lock("FOR UPDATE SKIP LOCKED").all
+        end
+
+        def fail_events(ids)
+          abstract_model.where(id: ids).update()
+        end
+
+        def insert_events(attributes) = abstract_model.insert_all(attributes)
+        def delete_events(ids) = abstract_model.where(id: ids).delete
+        def fetch_topics = abstract_model.select(:topic).distinct.map(&:topic)
 
         private
 
-        def config = @config ||= TransactionalOutbox.config
-        def abstract_model = @abstract_model ||= build_abstract_model
-
-        def build_abstract_model
-          return unless config.db.adapter == :active_record && defined?(ActiveRecord::Base)
-
-          Class.new(ActiveRecord::Base) { self.table_name = table }
+        def abstract_model
+          @abstract_model ||= if config.db.adapter == :active_record && defined?(ActiveRecord::Base)
+            Class.new(ActiveRecord::Base) { self.table_name = outbox_table_name }
+          end
         end
       end
     end

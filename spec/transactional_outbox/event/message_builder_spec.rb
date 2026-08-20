@@ -12,6 +12,7 @@ RSpec.describe TransactionalOutbox::Event::MessageBuilder do
       aggregate_type: "test",
       topic: "test-topic",
       event_type: "created",
+      headers: {},
       payload:
     }
   end

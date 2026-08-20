@@ -52,16 +52,8 @@ RSpec.describe TransactionalOutbox::Database do
   let(:db_adapter) { :null }
 
   before do
-    TransactionalOutbox.configure do |config|
-      config.test_environment = test_environment
-      config.db.adapter = db_adapter
-    end
-  end
-
-  describe "#dataset" do
-    subject { described_class.new.dataset }
-
-    include_context "common cases", :dataset
+    allow(TransactionalOutbox.config).to receive(:test_environment).and_return(test_environment)
+    allow(TransactionalOutbox.config.db).to receive(:adapter).and_return(db_adapter)
   end
 
   describe "#transaction" do

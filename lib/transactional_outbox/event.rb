@@ -22,6 +22,10 @@ module TransactionalOutbox
       end
     end
 
+    def initialize
+      @config = self.class.config
+    end
+
     def create!(context)
       validate_context!(context)
 
@@ -42,7 +46,7 @@ module TransactionalOutbox
 
     def config = @config ||= self.class.config
 
-    def save(rows) = TransactionalOutbox::Repositories::OutboxEvent.new.insert(rows)
+    def save(rows) = TransactionalOutbox::Database.new.insert_events(rows)
 
     def validate_event(schema, payload)
       return true if config.schema.nil?

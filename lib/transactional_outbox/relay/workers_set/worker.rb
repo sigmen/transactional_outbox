@@ -4,6 +4,8 @@ module TransactionalOutbox
   module Relay
     class WorkersSet
       class Worker
+        attr_reader :topic, :db, :producer
+
         def initialize(topic)
           @topic = topic
           @db = TransactionalOutbox::Database.new
@@ -25,7 +27,7 @@ module TransactionalOutbox
 
         private
 
-        attr_reader :topic, :db, :producer, :thread
+        attr_reader :thread
 
         def config = @config ||= TransactionalOutbox.config
 
@@ -61,6 +63,8 @@ module TransactionalOutbox
           db.delete_events(events.map { |x| x[:id] })
 
           config.logger.info("Events have sent to topic #{topic}: #{events.size}")
+        rescue StandardError => e
+          config.relay.failover.call(e, self)
         end
 
         def mark_as_stopped = thread[:stopped] = true

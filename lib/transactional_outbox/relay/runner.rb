@@ -9,7 +9,7 @@ module TransactionalOutbox
     class Runner
       class << self
         def start
-          TransactionalOutbox.monitor.publish("runner.init")
+          TransactionalOutbox::Relay.monitor.publish("runner.init")
 
           worker_set = TransactionalOutbox::Relay::WorkerSet.new
 

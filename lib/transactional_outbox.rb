@@ -28,6 +28,7 @@ require_relative "transactional_outbox/exceptions"
 require_relative "transactional_outbox/exponential_backoff"
 require_relative "transactional_outbox/producer"
 
+require_relative "transactional_outbox/relay/failover"
 require_relative "transactional_outbox/relay/runner"
 
 TransactionalOutbox::Adapters::Database.register(:null, TransactionalOutbox::Adapters::Database::Null)
@@ -52,6 +53,10 @@ module TransactionalOutbox
   setting :test_environment, default: false
   setting :max_relay_runner_retries_count, default: 5
   setting :default_event_builder, default: TransactionalOutbox::Event::Builder
+
+  setting :relay do
+    setting :failover, default: TransactionalOutbox::Relay::Failover
+  end
 
   setting :db do
     setting :adapter

@@ -6,13 +6,13 @@ module TransactionalOutbox
   module Relay
     class WorkersSet
       def initialize
-        @workers_set = {}
+        @workers = {}
       end
 
-      def get_worker(topic) = workers_set[topic]
+      def get_worker(topic) = workers[topic]
 
       def add_worker(topic)
-        return if workers_set.key?(topic)
+        return if workers.key?(topic)
 
         set_worker(topic)
       end
@@ -20,20 +20,19 @@ module TransactionalOutbox
       def try_to_recover_worker(topic)
         worker = get_worker(topic)
 
-        return if worker.shutting_down? || !worker.stopped?
+        return if !worker.nil? && (worker.shutting_down? || !worker.stopped?)
 
         set_worker(topic)
       end
 
-      def stop_workers = workers.each(&:shutdown)
-      def all_stopped? = workers.all?(&:stopped?)
+      def stop_workers = workers.values.each(&:shutdown)
+      def all_stopped? = workers.values.all?(&:stopped?)
 
       private
 
-      attr_reader :workers_set
+      attr_reader :workers
 
-      def workers = workers_set.values
-      def set_worker(topic) = workers_set[topic] = Worker.new(topic).run
+      def set_worker(topic) = workers[topic] = Worker.new(topic).tap(&:run)
     end
   end
 end

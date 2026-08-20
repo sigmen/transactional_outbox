@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "event/message_builder"
 require_relative "event/contextable"
 require_relative "event/payloadable"
 
@@ -14,16 +13,12 @@ module TransactionalOutbox
     setting :aggregate_type
     setting :event_type
     setting :topic
-    setting :message_builder, default: MessageBuilder
+    setting :message_builder
 
     config.values.keys.each do |attr|
       define_singleton_method(attr) do |value|
         config[attr] = value
       end
-    end
-
-    def initialize
-      @config = self.class.config
     end
 
     def create!(context)
@@ -46,6 +41,8 @@ module TransactionalOutbox
 
     def config = @config ||= self.class.config
 
+    def message_builder = @message_builder ||= config.message_builder || TransactionalOutbox.config.default_message_builder
+
     def save(rows) = TransactionalOutbox::Database.new.insert_events(rows)
 
     def validate_event(schema, payload)
@@ -64,7 +61,7 @@ module TransactionalOutbox
 
       validate_event(config.schema, payload)
 
-      config.message_builder.build(self.class.config, payload, context)
+      message_builder.build(self.class.config, payload, context)
     end
 
     def build_batch(contexts) = contexts.map { build_message(_1) }

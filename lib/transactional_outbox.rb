@@ -23,6 +23,7 @@ require_relative "transactional_outbox/adapters/producer/karafka"
 require_relative "transactional_outbox/constants"
 require_relative "transactional_outbox/database"
 require_relative "transactional_outbox/event"
+require_relative "transactional_outbox/event/message_builder"
 require_relative "transactional_outbox/exceptions"
 require_relative "transactional_outbox/exponential_backoff"
 require_relative "transactional_outbox/producer"
@@ -50,6 +51,7 @@ module TransactionalOutbox
   setting :migrations_directory
   setting :test_environment, default: false
   setting :max_relay_runner_retries_count, default: 5
+  setting :default_message_builder, default: TransactionalOutbox::Event::MessageBuilder
 
   setting :db do
     setting :adapter

@@ -52,7 +52,7 @@ RSpec.describe TransactionalOutbox::Event do
   let(:dataset) { TransactionalOutbox::Adapters::Database::Null.dataset }
 
   let(:event_class) do
-    define_event(payload_schema, aggregate_type, event_type, topic, message_builder_class, payload_block)
+    define_event(payload_schema, aggregate_type, event_type, topic, event_builder_class, payload_block)
   end
 
   let(:context) { { id: SecureRandom.uuid, name: "Foo Barovich" } }
@@ -60,7 +60,7 @@ RSpec.describe TransactionalOutbox::Event do
   let(:topic) { "test-topic" }
   let(:event_type) { "created" }
   let(:payload_schema) { JSON.load_file("#{Dir.pwd}/spec/fixtures/event_schema.json") }
-  let(:message_builder_class) { TransactionalOutbox::Event::MessageBuilder }
+  let(:event_builder_class) { TransactionalOutbox::Event::Builder }
   let(:payload_block) { ->(context) { { id: context[:id], name: context[:name] } } }
   let(:correct_event_data) do
     { topic:, aggregate_type:, event_type:, headers: {}, payload: { id: context[:id], name: context[:name] } }

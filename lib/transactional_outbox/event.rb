@@ -13,7 +13,7 @@ module TransactionalOutbox
     setting :aggregate_type
     setting :event_type
     setting :topic
-    setting :message_builder
+    setting :event_builder
 
     config.values.keys.each do |attr|
       define_singleton_method(attr) do |value|
@@ -24,7 +24,7 @@ module TransactionalOutbox
     def create!(context)
       validate_context!(context)
 
-      event = build_message(context)
+      event = build_event(context)
 
       save([event])
     end
@@ -32,16 +32,16 @@ module TransactionalOutbox
     def bulk_create!(contexts)
       validate_contexts!(contexts)
 
-      batch = build_batch(contexts)
+      events = build_events(contexts)
 
-      save(batch)
+      save(events)
     end
 
     private
 
     def config = @config ||= self.class.config
 
-    def message_builder = @message_builder ||= config.message_builder || TransactionalOutbox.config.default_message_builder
+    def event_builder = @event_builder ||= config.event_builder || TransactionalOutbox.config.default_event_builder
 
     def save(rows) = TransactionalOutbox::Database.new.insert_events(rows)
 
@@ -55,16 +55,16 @@ module TransactionalOutbox
       raise TransactionalOutbox::InvalidPayloadError, errors.join(", ")
     end
 
-    def build_message(context)
+    def build_event(context)
       event_type = config.event_type
       payload = build_payload(context)
 
       validate_event(config.schema, payload)
 
-      message_builder.build(self.class.config, payload, context)
+      event_builder.build(self.class.config, payload, context)
     end
 
-    def build_batch(contexts) = contexts.map { build_message(_1) }
+    def build_events(contexts) = contexts.map { build_event(_1) }
 
     def validate_contexts!(contexts) = contexts.each { |context| validate_context!(context) }
   end

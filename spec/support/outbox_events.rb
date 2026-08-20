@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-def gen_messages(topic, count)
+def gen_events(topic, count)
   repo = TransactionalOutbox::Database.new
 
   count.times do

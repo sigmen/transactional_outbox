@@ -2,7 +2,7 @@
 
 module TransactionalOutbox
   class Event
-    class MessageBuilder
+    class Builder
       def self.build(event_config, payload, _context)
         {
           topic: event_config.topic,

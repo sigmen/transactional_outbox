@@ -4,11 +4,11 @@ module TransactionalOutbox
   module Adapters
     class Producer
       class Karafka < Interface
-        def produce_batch(topic, batch) = producer.produce_many_sync(prepare_messages(topic, batch))
+        def produce_batch(topic, events) = producer.produce_many_sync(prepare_events(topic, events))
 
         private
 
-        def prepare_messages(topic, batch) = batch.map { |message| { topic:, payload: message.to_json } }
+        def prepare_events(topic, events) = events.map { |event| { topic:, payload: event.to_json } }
       end
     end
   end

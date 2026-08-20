@@ -6,7 +6,7 @@ module TransactionalOutbox
       def self.extended(klass)
         klass.define_method(:build_payload) do |context|
           builder = self.class.instance_variable_get(:@__payload_builder__) ||
-            TransactionalOutbox::Constants::DEFAULT_PAYLOAD_BUILDER_BLOCK
+            TransactionalOutbox::DEFAULT_PAYLOAD_BUILDER_BLOCK
 
           builder.call(context)
         end

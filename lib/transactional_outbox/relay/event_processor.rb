@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  module Relay
+  class Relay
     class EventProcessor
       def initialize(topic)
         @topic = topic
@@ -17,6 +17,8 @@ module TransactionalOutbox
         producer.produce_batch(topic, events)
 
         db.delete_events(events.map { |x| x[:id] })
+
+        TransactionalOutbox.monitor.publish("worker.events.processed", { topic:, count: events.size })
 
         config.logger.info("Events have sent to topic #{topic}: #{events.size}")
       rescue StandardError => e

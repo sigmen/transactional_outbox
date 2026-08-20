@@ -44,6 +44,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "oj"
   spec.add_dependency "rake", "~> 13.0"
   spec.add_dependency "dry-container", "~> 0.11"
+  spec.add_dependency "dry-monitor"
   spec.add_dependency "dry-validation", "~> 1.11"
 
   spec.add_development_dependency "rspec", "~> 3.0"

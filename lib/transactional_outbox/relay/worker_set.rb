@@ -3,7 +3,7 @@
 require_relative "worker_set/worker"
 
 module TransactionalOutbox
-  module Relay
+  class Relay
     class WorkerSet
       def initialize
         @workers = {}

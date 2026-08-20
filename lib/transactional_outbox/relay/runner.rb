@@ -5,10 +5,12 @@ require_relative "worker_set/processor"
 require_relative "graceful_shutdown"
 
 module TransactionalOutbox
-  module Relay
+  class Relay
     class Runner
       class << self
         def start
+          TransactionalOutbox.monitor.publish("runner.init")
+
           worker_set = TransactionalOutbox::Relay::WorkerSet.new
 
           start_relay(worker_set)

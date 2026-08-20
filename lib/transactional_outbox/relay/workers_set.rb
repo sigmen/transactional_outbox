@@ -33,7 +33,7 @@ module TransactionalOutbox
       attr_reader :workers_set
 
       def workers = workers_set.values
-      def set_worker(topic) = workers_set[topic] = Worker.new(topic)
+      def set_worker(topic) = workers_set[topic] = Worker.new(topic).run
     end
   end
 end

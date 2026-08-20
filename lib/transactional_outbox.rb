@@ -25,7 +25,6 @@ require_relative "transactional_outbox/database"
 require_relative "transactional_outbox/event"
 require_relative "transactional_outbox/exceptions"
 require_relative "transactional_outbox/exponential_backoff"
-require_relative "transactional_outbox/repositories/outbox_event"
 require_relative "transactional_outbox/producer"
 
 require_relative "transactional_outbox/relay/runner"

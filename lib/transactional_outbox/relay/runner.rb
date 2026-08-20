@@ -32,7 +32,7 @@ module TransactionalOutbox
 
         def process_relay
           loop do
-            topics = outbox_events_repo.fetch_topics
+            topics = db.fetch_topics
 
             topics.each do |topic|
               worker = workers_set.get_worker(topic)
@@ -56,7 +56,7 @@ module TransactionalOutbox
           end
         end
 
-        def outbox_events_repo = @outbox_events_repo ||= TransactionalOutbox::Repositories::OutboxEvent.new
+        def db = @db ||= TransactionalOutbox::Database.new
         def config = @config ||= TransactionalOutbox.config
         def calculate_retry_delay = TransactionalOutbox::ExponentialBackoff.calculate_retry_delay(@retry_counter)
 

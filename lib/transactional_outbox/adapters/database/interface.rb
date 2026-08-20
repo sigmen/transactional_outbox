@@ -4,17 +4,20 @@ module TransactionalOutbox
   module Adapters
     class Database
       class Interface
-        def initialize(table)
-          @table = table
+        def initialize
+          @outbox_table_name = TransactionalOutbox.config.outbox_table_name
         end
 
-        def dataset = raise NotImplementedError
         def transaction(*_options, &) = raise NotImplementedError
-        def select_for_update(_dataset) = raise NotImplementedError
+        def insert_events(_attributes) = raise NotImplementedError
+        def fetch_events(_topic_name) = raise NotImplementedError
+        def fail_events(_ids) = raise NotImplementedError
+        def delete_events(_ids) = raise NotImplementedError
+        def fetch_topics = raise NotImplementedError
 
         private
 
-        attr_reader :table
+        attr_reader :outbox_table_name
       end
     end
   end

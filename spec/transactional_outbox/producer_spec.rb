@@ -40,10 +40,8 @@ RSpec.describe TransactionalOutbox::Producer do
   let(:producer_adapter) { :null }
 
   before do
-    TransactionalOutbox.configure do |config|
-      config.test_environment = test_environment
-      config.producer.adapter = producer_adapter
-    end
+    allow(TransactionalOutbox.config).to receive(:test_environment).and_return(test_environment)
+    allow(TransactionalOutbox.config.producer).to receive(:adapter).and_return(producer_adapter)
   end
 
   describe "#produce_batch" do

@@ -9,10 +9,10 @@ module TransactionalOutbox
           def clear_store = @messages = {}
         end
 
-        def produce_batch(topic, batch)
+        def produce_batch(topic, events)
           messages = self.class.messages[topic] ||= []
 
-          messages.concat(batch)
+          messages.concat(events)
 
           TransactionalOutbox.config.logger.info("Batch produced")
         end

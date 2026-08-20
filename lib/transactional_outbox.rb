@@ -4,6 +4,7 @@ require "forwardable"
 
 require "dry-container"
 require "dry-configurable"
+require "dry-monitor"
 require "dry-validation"
 require "json-schema"
 require "oj"
@@ -28,8 +29,11 @@ require_relative "transactional_outbox/exceptions"
 require_relative "transactional_outbox/exponential_backoff"
 require_relative "transactional_outbox/producer"
 
+require_relative "transactional_outbox/relay"
 require_relative "transactional_outbox/relay/failover"
 require_relative "transactional_outbox/relay/runner"
+
+require_relative "transactional_outbox/railtie" if defined?(Rails::Railtie)
 
 TransactionalOutbox::Adapters::Database.register(:null, TransactionalOutbox::Adapters::Database::Null)
 TransactionalOutbox::Adapters::Database.register(:sequel, TransactionalOutbox::Adapters::Database::Sequel)
@@ -39,6 +43,7 @@ TransactionalOutbox::Adapters::Producer.register(:null, TransactionalOutbox::Ada
 TransactionalOutbox::Adapters::Producer.register(:karafka, TransactionalOutbox::Adapters::Producer::Karafka)
 
 module TransactionalOutbox
+  include Constants
   include Exceptions
 
   extend Dry::Configurable
@@ -68,9 +73,11 @@ module TransactionalOutbox
     setting :client
   end
 
-  def self.transaction(event)
-    Database.new.transaction do
-      yield(event.new)
+  class << self
+    def transaction(event)
+      Database.new.transaction do
+        yield(event.new)
+      end
     end
   end
 end

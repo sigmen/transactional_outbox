@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  module Relay
+  class Relay
     class GracefulShutdown
       class << self
         def call(worker_set)
@@ -11,6 +11,8 @@ module TransactionalOutbox
 
           while shutdown_time + config.shutdown_waiting_time_seconds > Time.now.utc
             if worker_set.all_stopped?
+              TransactionalOutbox.monitor.publish("runner.stopped")
+
               config.logger.info("All workers have stopped.")
 
               return true

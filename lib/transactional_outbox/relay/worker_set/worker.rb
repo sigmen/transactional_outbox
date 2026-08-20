@@ -3,7 +3,7 @@
 require_relative "../event_processor"
 
 module TransactionalOutbox
-  module Relay
+  class Relay
     class WorkerSet
       class Worker
         attr_reader :topic, :db, :producer
@@ -32,7 +32,9 @@ module TransactionalOutbox
         def config = @config ||= TransactionalOutbox.config
 
         def spawn_thread
-          thread = Thread.new do
+          TransactionalOutbox.monitor.publish("worker.run", { topic: })
+
+          Thread.new do
             loop do
               TransactionalOutbox::Relay::EventProcessor.new(topic).call
 
@@ -55,7 +57,11 @@ module TransactionalOutbox
           end
         end
 
-        def mark_thread_as_stopped = Thread.current[:stopped] = true
+        def mark_thread_as_stopped
+          Thread.current[:stopped] = true
+
+          TransactionalOutbox.monitor.publish("worker.stopped", { topic: })
+        end
       end
     end
   end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  module Relay
+  class Relay
     class WorkerSet
       class Processor
         def initialize(worker_set)

@@ -9,22 +9,22 @@ module TransactionalOutbox
         klass.define_method(:validate_context!) do |params|
           ctx_schema = self.class.instance_variable_get(:@__context_schema__)
 
-          return unless ctx_schema
+          return true unless ctx_schema
 
           result = ctx_schema.call(params)
 
-          self.class.check_context_validation_result!(params, result)
+          self.class.check_context_validation_result!(result)
         end
       end
 
-      def check_context_validation_result!(params, result)
-        return if result.success?
+      def check_context_validation_result!(result)
+        return true if result.success?
 
         errors = result.message_set.messages.map do |message|
           "#{message.path.join("->")} #{message.text}"
         end.join(", ")
 
-        "Invalid context error: #{self.class.stringify_errors(result)}, context: #{params}"
+        raise TransactionalOutbox::InvalidContextError, "Invalid context error: #{errors}"
       end
 
       def context(&block)

@@ -11,8 +11,8 @@ module TransactionalOutbox
     def create_migration_file
       adapter = TransactionalOutbox.config.db.adapter
 
-      if !TransactionalOutbox::Constants::ALLOWED_FOR_GEN_MIGRATION_ADAPTERS.include?(adapter.to_s)
-        raise ImpossibleToGenerateMigrationError, "Impossible to generate migration for adapter: #{adapter}"
+      if !File.exist?("templates/#{adapter}.rb.erb")
+        raise TransactionalOutbox::MigrationFileNotExistsError, "Migration template not exists for adapter: #{adapter}"
       end
 
       migration_name = "create_outbox_events_table"

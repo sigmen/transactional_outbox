@@ -6,7 +6,7 @@ module TransactionalOutbox
     class InvalidPayloadError < StandardError; end
     class UnknownAdapterError < StandardError; end
     class AdapterAlreadyExistsError < StandardError; end
-    class ImpossibleToGenerateMigrationError < StandardError; end
+    class MigrationFileNotExistsError < StandardError; end
     class InvalidContextError < StandardError; end
   end
 end

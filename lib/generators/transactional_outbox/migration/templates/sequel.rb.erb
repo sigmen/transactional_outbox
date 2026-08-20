@@ -12,11 +12,11 @@ Sequel.migration do
         payload jsonb DEFAULT '{}' NOT NULL,
         failed_at timestamp without time zone,
         retry_num int DEFAULT 0 NOT NULL,
+        next_retry_at timestamp without time zone,
         created_at timestamp without time zone DEFAULT now() NOT NULL
       );
 
       CREATE INDEX idx_outbox_events_topic ON outbox_events(topic);
-      CREATE INDEX idx_outbox_events_failed_at ON outbox_events(failed_at);
     SQL
   end
 

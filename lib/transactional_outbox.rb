@@ -55,6 +55,7 @@ module TransactionalOutbox
 
   setting :db do
     setting :adapter
+    setting :model
   end
 
   setting :producer do

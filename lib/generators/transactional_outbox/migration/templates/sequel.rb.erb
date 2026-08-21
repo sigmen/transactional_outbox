@@ -8,8 +8,8 @@ Sequel.migration do
         aggregate_type text NOT NULL,
         event_type text NOT NULL,
         topic text NOT NULL,
-        headers jsonb DEFAULT '{}' NOT NULL,
-        payload jsonb DEFAULT '{}' NOT NULL,
+        headers jsonb,
+        payload jsonb,
         created_at timestamp without time zone DEFAULT now() NOT NULL
       );
 

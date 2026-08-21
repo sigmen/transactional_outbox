@@ -18,7 +18,6 @@ module TransactionalOutbox
 
         producer.produce_batch(topic, events)
 
-        puts events.inspect
         db.delete_events(events.map { |x| x[:id] })
 
         TransactionalOutbox::Relay.monitor.publish("worker.events.processed", { topic:, count: events.size })

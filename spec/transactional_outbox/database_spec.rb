@@ -3,7 +3,7 @@
 RSpec.describe TransactionalOutbox::Database do
   shared_context "common cases" do |method_name|
     it "calls #{method_name} method of the null adapter" do
-      expect_any_instance_of(TransactionalOutbox::Adapters::Database::Null)
+      expect_any_instance_of(TransactionalOutbox::Database::Adapters::Null)
         .to receive(method_name)
         .once
         .and_call_original
@@ -18,7 +18,7 @@ RSpec.describe TransactionalOutbox::Database do
         let(:db_adapter) { :sequel }
 
         it "calls correct method" do
-          expect_any_instance_of(TransactionalOutbox::Adapters::Database::Sequel)
+          expect_any_instance_of(TransactionalOutbox::Database::Adapters::Sequel)
             .to receive(method_name)
             .once
 
@@ -30,7 +30,7 @@ RSpec.describe TransactionalOutbox::Database do
         let(:db_adapter) { :active_record }
 
         it "calls correct method" do
-          expect_any_instance_of(TransactionalOutbox::Adapters::Database::ActiveRecord)
+          expect_any_instance_of(TransactionalOutbox::Database::Adapters::ActiveRecord)
             .to receive(method_name)
             .once
 

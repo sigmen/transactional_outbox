@@ -3,7 +3,7 @@
 RSpec.describe TransactionalOutbox::Producer do
   shared_context "common cases" do |method_name|
     it "calls #{method_name} method of the null adapter" do
-      expect_any_instance_of(TransactionalOutbox::Adapters::Producer::Null)
+      expect_any_instance_of(TransactionalOutbox::Producer::Adapters::Null)
         .to receive(method_name)
         .once
         .and_call_original
@@ -18,7 +18,7 @@ RSpec.describe TransactionalOutbox::Producer do
         let(:producer_adapter) { :karafka }
 
         it "calls correct method" do
-          expect_any_instance_of(TransactionalOutbox::Adapters::Producer::Karafka)
+          expect_any_instance_of(TransactionalOutbox::Producer::Adapters::Karafka)
             .to receive(method_name)
             .once
 

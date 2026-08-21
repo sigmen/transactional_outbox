@@ -2,10 +2,11 @@
 
 require "transactional_outbox"
 
-require_relative "support/config"
 require_relative "support/outbox_events"
 require_relative "support/adapters"
 require_relative "support/event"
+
+require_relative "dummy/config/environment"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -19,7 +20,7 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
-    TransactionalOutbox::Adapters::Database::Null.clear_store
-    TransactionalOutbox::Adapters::Producer::Null.clear_store
+    TransactionalOutbox::Database::Adapters::Null.clear_store
+    TransactionalOutbox::Producer::Adapters::Null.clear_store
   end
 end

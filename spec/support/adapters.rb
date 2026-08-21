@@ -2,13 +2,13 @@
 
 def clear_database_adapters_container
   clear_adapters_container(
-    TransactionalOutbox::Adapters::Database, TransactionalOutbox::BASE_DATABASE_ADAPTERS
+    TransactionalOutbox::Database::Adapters, TransactionalOutbox::BASE_DATABASE_ADAPTERS
   )
 end
 
 def clear_producer_adapters_container
   clear_adapters_container(
-    TransactionalOutbox::Adapters::Producer, TransactionalOutbox::BASE_PRODUCER_ADAPTERS
+    TransactionalOutbox::Producer::Adapters, TransactionalOutbox::BASE_PRODUCER_ADAPTERS
   )
 end
 

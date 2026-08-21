@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  module Adapters
-    class Database
+  class Database
+    class Adapters
       class ActiveRecord < Interface
         def transaction(*options, &) = abstract_model.transaction(*options, &)
 
@@ -23,8 +23,8 @@ module TransactionalOutbox
         private
 
         def abstract_model
-          @abstract_model ||= if config.db.adapter == :active_record && defined?(ActiveRecord::Base)
-            Class.new(ActiveRecord::Base) { self.table_name = outbox_table_name }
+          @abstract_model ||= if config.db.adapter == :active_record && defined?(::ActiveRecord::Base)
+            Class.new(::ActiveRecord::Base) { self.table_name = outbox_table_name }
           end
         end
       end

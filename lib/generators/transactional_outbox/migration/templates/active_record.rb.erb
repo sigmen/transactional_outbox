@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-class CreateOutboxEvents < ActiveRecord::Migration[7.0]
+class CreateOutboxEventsTable < ActiveRecord::Migration[7.0]
   def change
     create_table :<%= TransactionalOutbox.config.outbox_table_name %>, id: :uuid do |t|
-      t.string :aggregate_type
+      t.string :aggregate_type, null: false
+      t.uuid :aggregate_id, null: false
       t.string :event_type, null: false
       t.string :topic, null: false
       t.jsonb :headers

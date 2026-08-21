@@ -41,7 +41,13 @@ module TransactionalOutbox
 
     def config = @config ||= self.class.config
 
-    def event_builder = @event_builder ||= config.event_builder || TransactionalOutbox.config.default_event_builder
+    def event_builder
+      @event_builder ||= begin
+        klass = config.event_builder || TransactionalOutbox.config.default_event_builder
+
+        Object.const_get(klass)
+      end
+    end
 
     def save(rows) = TransactionalOutbox::Database.new.insert_events(rows)
 

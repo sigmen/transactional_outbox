@@ -47,6 +47,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency "dry-monitor"
   spec.add_dependency "dry-validation", "~> 1.11"
 
+  spec.add_development_dependency "ruby-kafka"
+  spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "rails", "~> 8.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.21"
+  spec.add_development_dependency "sequel"
 end

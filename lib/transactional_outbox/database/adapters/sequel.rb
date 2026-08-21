@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  module Adapters
-    class Database
+  class Database
+    class Adapters
       class Sequel < Interface
         def transaction(*options, &) = dataset.transaction(*options, &)
-        def insert_events(attributes) = dataset.insert(attributes)
+        def insert_events(attributes) = dataset.multi_insert(attributes)
         def fetch_topics = dataset.select(:topic).distinct.map(&:topic)
         def delete_events(ids) = dataset.where(id: ids).delete
 
@@ -22,8 +22,8 @@ module TransactionalOutbox
         private
 
         def dataset
-          @dataset ||= if config.db.adapter == :sequel && defined?(Sequel)
-            Sequel::Model.db[outbox_table_name]
+          @dataset ||= if config.db.adapter == :sequel && defined?(::Sequel)
+            ::Sequel::Model(outbox_table_name.to_sym)
           end
         end
       end

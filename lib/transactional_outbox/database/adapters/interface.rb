@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  module Adapters
-    class Database
+  class Database
+    class Adapters
       class Interface
         def initialize
           @outbox_table_name = TransactionalOutbox.config.outbox_table_name
@@ -18,6 +18,8 @@ module TransactionalOutbox
         private
 
         attr_reader :outbox_table_name
+
+        def config = @config ||= TransactionalOutbox.config
       end
     end
   end

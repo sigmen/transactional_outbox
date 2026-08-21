@@ -8,7 +8,7 @@ module TransactionalOutbox
           builder = self.class.instance_variable_get(:@__payload_builder__) ||
             TransactionalOutbox::DEFAULT_PAYLOAD_BUILDER_BLOCK
 
-          builder.call(context)
+          instance_exec(context, &builder)
         end
       end
 

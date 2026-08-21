@@ -29,7 +29,9 @@ RSpec.describe TransactionalOutbox::Relay::Runner do
 
   context "when received signal exception" do
     before do
-      allow_any_instance_of(TransactionalOutbox::Relay::WorkerSet::Processor).to receive(:call).and_raise(SignalException.new(0))
+      allow_any_instance_of(TransactionalOutbox::Relay::WorkerSet::Processor)
+        .to receive(:call)
+        .and_raise(SignalException.new(0))
     end
 
     it "calls graceful shutdown" do

@@ -59,39 +59,38 @@ RSpec.describe TransactionalOutbox::Database::Adapters::Sequel do
     let(:aggregate_id) { SecureRandom.uuid }
     let(:aggregate_type) { "user" }
     let(:event_type) { "created" }
-    let(:event_1) do
+    let(:event1) do
       {
         id:,
         topic:,
         aggregate_id:,
         aggregate_type:,
         event_type:,
-        headers: '{}',
+        headers: "{}",
         created_at: Time.now.utc,
         payload: { id: aggregate_id }.to_json
       }
     end
 
-    let(:event_2) do
+    let(:event2) do
       {
         id: SecureRandom.uuid,
         topic: "test-topic-2",
         aggregate_id: SecureRandom.uuid,
         aggregate_type:,
         event_type:,
-        headers: '{}',
+        headers: "{}",
         created_at: Time.now.utc,
         payload: { id: SecureRandom.uuid }.to_json
       }
     end
 
-
     before do
-      Sequel::Model(:outbox_events).multi_insert([event_1, event_2])
+      Sequel::Model(:outbox_events).multi_insert([event1, event2])
     end
 
     it "returns events filtered by topic" do
-      expect(fetch_events).to eq [event_1]
+      expect(fetch_events).to eq [event1]
     end
   end
 end

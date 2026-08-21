@@ -62,7 +62,6 @@ module TransactionalOutbox
     end
 
     def build_event(context)
-      event_type = config.event_type
       payload = build_payload(context)
 
       validate_event(config.schema, payload)

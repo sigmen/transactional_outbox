@@ -5,8 +5,8 @@ module TransactionalOutbox
     class Adapters
       class Null < Interface
         class << self
-          def dataset = @__dataset__ ||= []
-          def clear_store = @__dataset__ = []
+          def dataset = @dataset ||= []
+          def clear_store = @dataset = []
         end
 
         def transaction(*_options, &block) = block.call

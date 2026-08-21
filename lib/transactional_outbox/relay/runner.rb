@@ -15,17 +15,9 @@ module TransactionalOutbox
 
           start_relay(worker_set)
         rescue StandardError => e
-          config.logger.info("Received exception: #{e}. Shutting down...")
-
-          start_graceful_shutdown(worker_set)
-
-          call_exit(1)
+          shutdown(e, worker_set, 1)
         rescue SignalException => e
-          config.logger.info("Received system signal: #{e}. Shutting down...")
-
-          start_graceful_shutdown(worker_set)
-
-          call_exit(0)
+          shutdown(e, worker_set, 0)
         end
 
         private
@@ -43,6 +35,14 @@ module TransactionalOutbox
           return true if config.test_environment
 
           exit(code)
+        end
+
+        def shutdown(exception, worker_set, exit_code)
+          config.logger.info("Received exception: #{exception}. Shutting down...")
+
+          start_graceful_shutdown(worker_set)
+
+          call_exit(exit_code)
         end
       end
     end

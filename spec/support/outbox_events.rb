@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 def gen_events(topic, count)
-  repo = TransactionalOutbox::Database.new
+  return if count == 0
 
-  count.times do
-    repo.insert_events({ topic:, payload: {} })
-  end
+  repo = TransactionalOutbox::Database.new
+  events = count.times.map { { topic:, payload: {} } }
+
+  repo.insert_events(events)
 end

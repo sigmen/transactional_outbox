@@ -3,7 +3,7 @@
 Sequel.migration do
   up do
     run <<-SQL.squish
-      CREATE TABLE IF NOT EXISTS outbox_events (
+      CREATE TABLE IF NOT EXISTS <%= TransactionalOutbox.config.outbox_table_name %> (
         id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
         aggregate_type text NOT NULL,
         event_type text NOT NULL,
@@ -13,13 +13,13 @@ Sequel.migration do
         created_at timestamp without time zone DEFAULT now() NOT NULL
       );
 
-      CREATE INDEX idx_outbox_events_topic ON outbox_events(topic);
+      CREATE INDEX idx_<%= TransactionalOutbox.config.outbox_table_name %>_topic ON <%= TransactionalOutbox.config.outbox_table_name %>(topic);
     SQL
   end
 
   down do
     run <<-SQL.squish
-      DROP TABLE IF EXISTS outbox_events;
+      DROP TABLE IF EXISTS <%= TransactionalOutbox.config.outbox_table_name %>;
     SQL
   end
 end

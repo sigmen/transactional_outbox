@@ -4,29 +4,23 @@ module TransactionalOutbox
   class Database
     class Adapters
       class ActiveRecord < Interface
-        def transaction(*options, &) = abstract_model.transaction(*options, &)
+        def transaction(*options, &) = model.transaction(*options, &)
 
-        def fetch_events(topic_name, batch_size)
-          abstract_model
-            .where(topic_name:)
-            .where("next_retry_at IS NULL OR next_retry_at < current_timestamp")
-            .order(:created_at)
-            .limit(batch_size)
-            .lock("FOR UPDATE SKIP LOCKED")
-            .all
+        def fetch_events(topic, batch_size)
+          model.where(topic:).order(:created_at).limit(batch_size).lock("FOR UPDATE SKIP LOCKED").map do |event|
+            event.attributes.symbolize_keys
+          end
         end
 
-        def insert_events(attributes) = abstract_model.insert_all(attributes)
-        def delete_events(ids) = abstract_model.where(id: ids).delete
-        def fetch_topics = abstract_model.select(:topic).distinct.map(&:topic)
+        def insert_events(attributes) = model.insert_all(attributes)
+        def delete_events(ids) = model.where(id: ids).delete_all
+        def fetch_topics = model.select(:topic).distinct.map(&:topic)
 
         private
 
-        def abstract_model
-          @abstract_model ||= if config.db.adapter == :active_record && defined?(::ActiveRecord::Base)
-            Class.new(::ActiveRecord::Base) { self.table_name = outbox_table_name }
-          end
-        end
+        attr_reader :model
+
+        def model = @model ||= Object.const_get(config.db.connection_data[:model])
       end
     end
   end

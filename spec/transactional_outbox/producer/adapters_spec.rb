@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe TransactionalOutbox::Adapters::Database do
+RSpec.describe TransactionalOutbox::Producer::Adapters do
   subject(:resolve) { described_class.resolve(adapter_name) }
   subject(:register) { described_class.register(adapter_name, adapter_class) }
 
@@ -8,7 +8,7 @@ RSpec.describe TransactionalOutbox::Adapters::Database do
   let(:adapter_class) { Class.new }
 
   after do
-    clear_database_adapters_container
+    clear_producer_adapters_container
   end
 
   describe "#resolve" do

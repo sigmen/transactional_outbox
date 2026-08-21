@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  module Adapters
-    class Database
+  class Database
+    class Adapters
       class Null < Interface
         class << self
           def dataset = @__dataset__ ||= []

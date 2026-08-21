@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-class CreateOutboxEvents < ActiveRecord::Migration[8.1]
+class CreateOutboxEvents < ActiveRecord::Migration[7.0]
   def change
-    create_table :outbox_events do
-      t.uuid :id, primary_key: true, default: "gen_random_uuid()"
+    create_table :<%= TransactionalOutbox.config.outbox_table_name %>, id: :uuid do |t|
       t.string :aggregate_type
       t.string :event_type, null: false
       t.string :topic, null: false
@@ -12,6 +11,7 @@ class CreateOutboxEvents < ActiveRecord::Migration[8.1]
       t.datetime :created_at, null: false, default: "now()"
     end
 
-    add_index :outbox_events, :topic
+    add_index :<%= TransactionalOutbox.config.outbox_table_name %>, :topic
   end
 end
+

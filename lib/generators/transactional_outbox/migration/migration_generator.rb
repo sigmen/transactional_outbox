@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module TransactionalOutbox
-  class MigrationGenerator
-    include Rails::Generators::Migration
+  class MigrationGenerator < ::Rails::Generators::Base
+    include ::Rails::Generators::Migration
 
     source_root File.expand_path("templates", __dir__)
 
@@ -11,7 +11,7 @@ module TransactionalOutbox
     def create_migration_file
       adapter = TransactionalOutbox.config.db.adapter
 
-      if !File.exist?("templates/#{adapter}.rb.erb")
+      if !File.exist?("#{File.expand_path("templates", __dir__)}/#{adapter}.rb.erb")
         raise TransactionalOutbox::MigrationFileNotExistsError, "Migration template not exists for adapter: #{adapter}"
       end
 

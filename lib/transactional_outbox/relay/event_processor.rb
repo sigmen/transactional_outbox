@@ -3,6 +3,8 @@
 module TransactionalOutbox
   class Relay
     class EventProcessor
+      attr_reader :topic, :db, :producer
+
       def initialize(topic)
         @topic = topic
         @db = TransactionalOutbox::Database.new
@@ -16,6 +18,7 @@ module TransactionalOutbox
 
         producer.produce_batch(topic, events)
 
+        puts events.inspect
         db.delete_events(events.map { |x| x[:id] })
 
         TransactionalOutbox::Relay.monitor.publish("worker.events.processed", { topic:, count: events.size })
@@ -26,8 +29,6 @@ module TransactionalOutbox
       end
 
       private
-
-      attr_reader :topic, :db, :producer
 
       def config = @config ||= TransactionalOutbox.config
     end

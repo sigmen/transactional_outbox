@@ -19,13 +19,13 @@ module TransactionalOutbox
 
           start_graceful_shutdown(worker_set)
 
-          exit(1)
+          call_exit(1)
         rescue SignalException => e
           config.logger.info("Received system signal: #{e}. Shutting down...")
 
           start_graceful_shutdown(worker_set)
 
-          exit(0)
+          call_exit(0)
         end
 
         private
@@ -37,6 +37,12 @@ module TransactionalOutbox
           return unless worker_set
 
           TransactionalOutbox::Relay::GracefulShutdown.call(worker_set)
+        end
+
+        def call_exit(code)
+          return true if config.test_environment
+
+          exit(code)
         end
       end
     end

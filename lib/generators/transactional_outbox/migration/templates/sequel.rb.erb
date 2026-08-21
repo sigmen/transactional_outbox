@@ -6,6 +6,7 @@ Sequel.migration do
       CREATE TABLE IF NOT EXISTS <%= TransactionalOutbox.config.outbox_table_name %> (
         id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
         aggregate_type text NOT NULL,
+        aggregate_id uuid NOT NULL,
         event_type text NOT NULL,
         topic text NOT NULL,
         headers jsonb,

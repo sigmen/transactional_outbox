@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.2
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
@@ -11,5 +11,9 @@ Style/Documentation:
   Enabled: false
 
 Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"
+
+Style/RescueModifier:
   Exclude:
     - "spec/**/*.rb"

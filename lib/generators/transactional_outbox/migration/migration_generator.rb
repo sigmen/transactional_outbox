@@ -11,7 +11,7 @@ module TransactionalOutbox
     def create_migration_file
       adapter = TransactionalOutbox.config.db.adapter
 
-      if !File.exist?("#{File.expand_path("templates", __dir__)}/#{adapter}.rb.erb")
+      unless File.exist?("#{File.expand_path("templates", __dir__)}/#{adapter}.rb.erb")
         raise TransactionalOutbox::MigrationFileNotExistsError, "Migration template not exists for adapter: #{adapter}"
       end
 

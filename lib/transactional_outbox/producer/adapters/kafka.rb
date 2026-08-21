@@ -5,6 +5,8 @@ module TransactionalOutbox
     class Adapters
       class Kafka < Interface
         def initialize(kafka)
+          super
+
           @producer = kafka.producer
         end
 

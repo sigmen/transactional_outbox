@@ -14,15 +14,9 @@ module TransactionalOutbox
       def call
         events = db.fetch_events(topic, config.batch_size)
 
-        return unless events.size > 0
+        return if events.empty?
 
-        producer.produce_batch(topic, events)
-
-        db.delete_events(events.map { |x| x[:id] })
-
-        TransactionalOutbox::Relay.monitor.publish("worker.events.processed", { topic:, count: events.size })
-
-        config.logger.info("Events have sent to topic #{topic}: #{events.size}")
+        process_events(events)
       rescue StandardError => e
         config.relay.failover.call(e, self)
       end
@@ -30,6 +24,16 @@ module TransactionalOutbox
       private
 
       def config = @config ||= TransactionalOutbox.config
+
+      def process_events(events)
+        producer.produce_batch(topic, events)
+
+        db.delete_events(events.map { |x| x[:id] })
+
+        TransactionalOutbox::Relay.monitor.publish("worker.events.processed", { topic:, count: events.size })
+
+        config.logger.info("Events have sent to topic #{topic}: #{events.size}")
+      end
     end
   end
 end

@@ -31,7 +31,7 @@ module TransactionalOutbox
 
         def config = @config ||= TransactionalOutbox.config
 
-        def spawn_thread
+        def spawn_thread # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
           TransactionalOutbox::Relay.monitor.publish("worker.run", { topic: })
 
           Thread.new do

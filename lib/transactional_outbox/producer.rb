@@ -6,6 +6,8 @@ module TransactionalOutbox
 
     def_delegators :@adapter, :produce_batch
 
+    attr_reader :adapter
+
     def initialize
       @adapter = TransactionalOutbox::Producer::Adapters.resolve(fetch_adapter).new(fetch_client)
     end

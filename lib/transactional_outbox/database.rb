@@ -6,6 +6,8 @@ module TransactionalOutbox
 
     def_delegators :@adapter, :transaction, :insert_events, :fetch_events, :fetch_topics, :delete_events
 
+    attr_reader :adapter
+
     def initialize
       @adapter = TransactionalOutbox::Database::Adapters.resolve(fetch_adapter).new
     end

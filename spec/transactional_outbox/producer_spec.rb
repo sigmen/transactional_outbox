@@ -14,11 +14,11 @@ RSpec.describe TransactionalOutbox::Producer do
     context "when test invironment is disabled" do
       let(:test_environment) { false }
 
-      context "when adapter is karafka" do
-        let(:producer_adapter) { :karafka }
+      context "when adapter is kafka" do
+        let(:producer_adapter) { :kafka }
 
         it "calls correct method" do
-          expect_any_instance_of(TransactionalOutbox::Producer::Adapters::Karafka)
+          expect_any_instance_of(TransactionalOutbox::Producer::Adapters::Kafka)
             .to receive(method_name)
             .once
 

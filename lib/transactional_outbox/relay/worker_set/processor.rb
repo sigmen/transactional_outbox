@@ -17,13 +17,15 @@ module TransactionalOutbox
 
             process_topics(topics)
 
+            break if config.test_environment
+
             @retry_counter = 0
           rescue StandardError => e
             config.logger.error("Exception: #{e}, trying to retry...")
 
-            @retry_counter += 1
+            raise e if @retry_counter >= config.max_relay_runner_retries_count
 
-            raise e if @retry_counter > config.max_relay_runner_retries_count
+            @retry_counter += 1
 
             sleep(calculate_retry_delay)
 
@@ -45,7 +47,7 @@ module TransactionalOutbox
             worker ? worker_set.try_to_recover_worker(topic) : worker_set.add_worker(topic)
           end
 
-          sleep(1)
+          sleep(config.delay_between_worker_set_processor_cycles)
         end
       end
     end

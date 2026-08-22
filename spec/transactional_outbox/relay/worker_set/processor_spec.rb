@@ -30,7 +30,7 @@ RSpec.describe TransactionalOutbox::Relay::WorkerSet::Processor do
       processor rescue nil
 
       expect(instance.instance_variable_get(:@retry_counter))
-        .to eq TransactionalOutbox.config.max_relay_runner_retries_count
+        .to eq TransactionalOutbox.config.relay.max_runner_retries_count
     end
   end
 end

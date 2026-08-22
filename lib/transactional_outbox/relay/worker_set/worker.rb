@@ -48,7 +48,7 @@ module TransactionalOutbox
 
               break if config.test_environment
 
-              sleep(config.wait_between_batches_seconds)
+              sleep(config.relay.wait_between_batches_seconds)
             end
           rescue StandardError => e
             mark_thread_as_stopped

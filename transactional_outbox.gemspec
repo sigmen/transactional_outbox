@@ -39,11 +39,11 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
 
-  spec.add_dependency "dry-configurable"
+  spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-container", "~> 0.11"
-  spec.add_dependency "dry-monitor"
+  spec.add_dependency "dry-monitor", "~> 1.0"
   spec.add_dependency "dry-validation", "~> 1.11"
-  spec.add_dependency "json-schema"
+  spec.add_dependency "json-schema", "~> 6.2"
   spec.add_dependency "rake", "~> 13.0"
 
   spec.add_development_dependency "rails", "~> 8.0"

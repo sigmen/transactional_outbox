@@ -4,12 +4,6 @@ module TransactionalOutbox
   class Producer
     class Adapters
       class Kafka < Interface
-        def initialize(kafka)
-          super
-
-          @producer = kafka.producer
-        end
-
         def produce_batch(topic, events)
           buffer_events(topic, events)
 
@@ -17,6 +11,8 @@ module TransactionalOutbox
         end
 
         private
+
+        def producer = @producer ||= client.producer
 
         def buffer_events(topic, events)
           events.each do |event|

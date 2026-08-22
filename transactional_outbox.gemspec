@@ -2,7 +2,7 @@
 
 require_relative "lib/transactional_outbox/version"
 
-Gem::Specification.new do |spec|
+Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.name = "transactional_outbox"
   spec.version = TransactionalOutbox::VERSION
   spec.authors = ["Roman Kakorin"]
@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "Implementation of transactional outbox pattern."
   spec.homepage = "https://github.com/sigmen/transactional_outbox"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.1.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
@@ -39,17 +39,17 @@ Gem::Specification.new do |spec|
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
 
-  spec.add_dependency "dry-configurable"
-  spec.add_dependency "json-schema"
-  spec.add_dependency "rake", "~> 13.0"
+  spec.add_dependency "dry-configurable", "~> 1.0"
   spec.add_dependency "dry-container", "~> 0.11"
-  spec.add_dependency "dry-monitor"
+  spec.add_dependency "dry-monitor", "~> 1.0"
   spec.add_dependency "dry-validation", "~> 1.11"
+  spec.add_dependency "json-schema", "~> 6.2"
+  spec.add_dependency "rake", "~> 13.0"
 
-  spec.add_development_dependency "ruby-kafka"
-  spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "rails", "~> 8.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.21"
+  spec.add_development_dependency "ruby-kafka"
   spec.add_development_dependency "sequel"
+  spec.add_development_dependency "sqlite3"
 end

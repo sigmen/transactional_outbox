@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 TransactionalOutbox.configure do |config|
   config.logger = Logger.new($stdout)
   config.outbox_table_name = "outbox_events"
@@ -8,6 +10,7 @@ TransactionalOutbox.configure do |config|
   config.delay_between_worker_set_processor_cycles = 0.1
 
   config.db.adapter = :sequel
+  config.db.connection_data = { db: Sequel::Model.db }
   config.producer.adapter = :kafka
   config.producer.client = Kafka.new("localhost")
 end

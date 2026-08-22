@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Sequel::Model.db = Sequel.sqlite
 
 Sequel::Model.db.create_table!(:outbox_events) do
@@ -19,3 +21,5 @@ Sequel::Model.db.create_table!(:users) do
 
   primary_key [:id]
 end
+
+Sequel.default_timezone = :utc

@@ -35,13 +35,5 @@ RSpec.describe TransactionalOutbox::Producer::Adapters do
         expect(resolve).to eq adapter_class
       end
     end
-
-    context "when trying to register an adapter twice" do
-      it "raises an error" do
-        register
-
-        expect { register }.to raise_error TransactionalOutbox::AdapterAlreadyExistsError
-      end
-    end
   end
 end

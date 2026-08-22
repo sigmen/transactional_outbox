@@ -14,7 +14,7 @@ module TransactionalOutbox
       def add_worker(topic)
         return if workers.key?(topic)
 
-        set_worker(topic)
+        create_worker(topic)
       end
 
       def try_to_recover_worker(topic)
@@ -22,17 +22,17 @@ module TransactionalOutbox
 
         return if !worker.nil? && (worker.shutting_down? || !worker.stopped?)
 
-        set_worker(topic)
+        create_worker(topic)
       end
 
-      def stop_workers = workers.values.each(&:shutdown)
+      def stop_workers = workers.each_value(&:shutdown)
       def all_stopped? = workers.values.all?(&:stopped?)
 
       private
 
       attr_reader :workers
 
-      def set_worker(topic) = workers[topic] = Worker.new(topic).tap(&:run)
+      def create_worker(topic) = workers[topic] = Worker.new(topic).tap(&:run)
     end
   end
 end

@@ -29,7 +29,8 @@ RSpec.describe TransactionalOutbox::Relay::WorkerSet::Processor do
     it "increases retry counter" do
       processor rescue nil
 
-      expect(instance.instance_variable_get(:@retry_counter)).to eq TransactionalOutbox.config.max_relay_runner_retries_count
+      expect(instance.instance_variable_get(:@retry_counter))
+        .to eq TransactionalOutbox.config.max_relay_runner_retries_count
     end
   end
 end

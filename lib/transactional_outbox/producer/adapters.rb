@@ -2,6 +2,7 @@
 
 module TransactionalOutbox
   class Producer
-    class Adapters < TransactionalOutbox::AdaptersContainer; end
+    class Adapters < TransactionalOutbox::AdaptersContainer
+    end
   end
 end

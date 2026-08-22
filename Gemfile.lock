@@ -2,11 +2,11 @@ PATH
   remote: .
   specs:
     transactional_outbox (0.1.0)
-      dry-configurable
+      dry-configurable (~> 1.0)
       dry-container (~> 0.11)
-      dry-monitor
+      dry-monitor (~> 1.0)
       dry-validation (~> 1.11)
-      json-schema
+      json-schema (~> 6.2)
       rake (~> 13.0)
 
 GEM

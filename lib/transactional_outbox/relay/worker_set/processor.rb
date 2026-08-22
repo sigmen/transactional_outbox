@@ -9,7 +9,7 @@ module TransactionalOutbox
           @db = TransactionalOutbox::Database.new
         end
 
-        def call
+        def call # rubocop:disable Metrics/MethodLength
           @retry_counter = 0
 
           loop do

@@ -3,7 +3,7 @@
 module TransactionalOutbox
   class Railtie < ::Rails::Railtie
     generators do
-      require_relative "../generators/transactional_outbox/migration/migration_generator.rb"
+      require_relative "../generators/transactional_outbox/migration/migration_generator"
     end
 
     rake_tasks do

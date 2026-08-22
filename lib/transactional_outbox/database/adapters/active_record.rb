@@ -18,8 +18,6 @@ module TransactionalOutbox
 
         private
 
-        attr_reader :model
-
         def model = @model ||= Object.const_get(config.db.connection_data[:model])
       end
     end

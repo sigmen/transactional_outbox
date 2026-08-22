@@ -12,18 +12,26 @@ module TransactionalOutbox
       end
 
       def call
-        events = db.fetch_events(topic, config.batch_size)
+        events = db.fetch_events(topic, config.relay.batch_size)
 
         return if events.empty?
 
         process_events(events)
       rescue StandardError => e
-        config.relay.failover.call(e, self)
+        resolve_failover.call(e, self)
       end
 
       private
 
       def config = @config ||= TransactionalOutbox.config
+
+      def resolve_failover
+        configured = config.relay.failover
+
+        return Object.get_const(configured) if configured.is_a?(String)
+
+        configured
+      end
 
       def process_events(events)
         producer.produce_batch(topic, events)

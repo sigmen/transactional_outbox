@@ -90,7 +90,9 @@ RSpec.describe TransactionalOutbox::Database::Adapters::Sequel do
     end
 
     it "returns events filtered by topic" do
-      expect(fetch_events).to eq [event1]
+      ids = fetch_events.map { |e| e[:id] }
+
+      expect(ids).to eq [event1[:id]]
     end
   end
 end

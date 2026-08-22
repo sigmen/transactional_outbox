@@ -18,7 +18,7 @@ module TransactionalOutbox
 
         process_events(events)
       rescue StandardError => e
-        resolve_failover.call(e, self)
+        resolve_failover.call(e, events)
       end
 
       private

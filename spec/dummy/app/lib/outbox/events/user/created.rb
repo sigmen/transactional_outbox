@@ -13,7 +13,7 @@ module Outbox
           required(:user).value(type?: ::User)
         end
 
-        payload do |context|
+        prepare_payload do |context|
           prepare_user(context[:user])
         end
 

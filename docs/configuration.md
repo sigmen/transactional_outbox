@@ -39,20 +39,22 @@ end
 
 ## Configurable parameters
 
+NOTE: **required** parameters should be defined in all cases and haven't any default value.
+
 ### Common parameters
 
-* `logger` - an instance of logger, the library uses only `info` and `error` logs levels. The parameter hasn't default value.
-* `migrations_directory` - a path to migrations directory, it uses when migrations are generating. Parameter is not mandatory while you aren't using the migration generator. Parameter hasn't default value.
-* **optional** `outbox_table_name` - the name of outbox table. This parameter uses when the library is trying to query a database or generate migrations. Default value is `outbox_events`.
-* **optional** `default_event_builder` - an event builder class. A builder defines a message broker event structure, you can see example [here](../transactional_outbox/event/bulder.rb). It can be overriden by an event configuration (see [Events Creation](events_creation.md)). Default value is `TransactionalOutbox::Event::Builder`
-* **optional** `shutdown_waiting_time_seconds` - time (in seconds) to wait of graceful shutdown. When time is over a process doesn't wait while threads will stop at a safe point. Default value is `10`.
+* **required** `logger` - an instance of logger, the library uses only `info` and `error` logs levels. The parameter hasn't default value.
+* **required in some cases** `migrations_directory` - a path to migrations directory, it uses when migrations are generating. Parameter is not mandatory while you aren't using the migration generator. Parameter hasn't default value.
+* `outbox_table_name` - the name of outbox table. This parameter uses when the library is trying to query a database or generate migrations. Default value is `outbox_events`.
+* `default_event_builder` - an event builder class. A builder defines a message broker event structure, you can see example [here](../transactional_outbox/event/bulder.rb). It can be overriden by an event configuration (see [Events Creation](events_creation.md)). Default value is `TransactionalOutbox::Event::Builder`
+* `shutdown_waiting_time_seconds` - time (in seconds) to wait of graceful shutdown. When time is over a process doesn't wait while threads will stop at a safe point. Default value is `10`.
 
 ### Database parameters
 
-* `db.adapter` - a database adapter key. Possible values by default are `sequel` and `active_record`. You can define and register your own adapter by instructions [here](database.md). The parameter is mandatory and hasn't default value.
-* `db.connection_data` - a connection parameters. The parameter is mandatory for default adapters and hasn't default value. It should be a hash and contains:
-  * `db.connection_data[:model]` - an outbox event model class. It has to be a string. The parameter is mandatory for `active_record` adapter and useless for `sequel`. It has no default value.
-  * `db.connection_data[:db]` - a sequel db instance (usual it's `Sequel::Model.db`). The parameter is mandatory for `sequel` adapter and useless for `active_record`. It has no default value.
+* **required** `db.adapter` - a database adapter key. Possible values by default are `sequel` and `active_record`. You can define and register your own adapter by instructions [here](database.md). The parameter hasn't default value.
+* **required in some cases** `db.connection_data` - a connection parameters. The parameter is mandatory for default adapters and hasn't default value. It should be a hash and contains:
+  * **required for active record** `db.connection_data[:model]` - an outbox event model class. It has to be a string. The parameter is mandatory for `active_record` adapter and useless for `sequel`. It has no default value.
+  * **required for sequel** `db.connection_data[:db]` - a sequel db instance (usual it's `Sequel::Model.db`). The parameter is mandatory for `sequel` adapter and useless for `active_record`. It has no default value.
 
 **Example configuration for Sequel:**
 
@@ -82,8 +84,8 @@ end
 
 ### Producer parameters
 
-* `producer.adapter` - a producer adapter key. Possible value by default is only `kafka` (`ruby-kafka` gem). You can define and register your own adapter by instructions [here](message_producing.md). The parameter is mandatory and hasn't default value.
-* `producer.client` - a client instance. It throws to initializer of an adapter instance. The parameter is mandatory and hasn't default value.
+* **required** `producer.adapter` - a producer adapter key. Possible value by default is only `kafka` (`ruby-kafka` gem). You can define and register your own adapter by instructions [here](message_producing.md). The parameter hasn't default value.
+* **required** `producer.client` - a client instance. It throws to initializer of an adapter instance. The parameter hasn't default value.
 
 Example configuration for Kafka:
 
@@ -100,8 +102,8 @@ end
 
 ### Event Relay parameters
 
-* **optional** `relay.batch_size` - a count of events fetching from a database. Default value is `20`.
-* **optional** `relay.wait_between_batches_seconds` - time (in seconds) between processing previous and next batches. You can increase time for reducing queries count to database, but it affects a performance. Default value is `0.1`.
-* **optional** `relay.failover` - an instance (or callable singleton class, or proc/lambda) of an event failover. It has to be a string. You can define there exceptions handling/failing events behaviour (see failover.md). By default the library doesn't handle any exceptions arising during an event processing, default failover just throws received exception. Default value is `TransactionalOutbox::Relay::Failover`.
-* **optional** `max_runner_retries_count` - max attemps to process topics and spawn workers by event relay runner until it dies. Default value is `5`.
-* **optional** `delay_between_worker_set_processor_cycles` - delay (in seconds) between spawn workers cycle (**fetch topics -> try to spawn workers for each of them**). Default value is `1`.
+* `relay.batch_size` - a count of events fetching from a database. Default value is `20`.
+* `relay.wait_between_batches_seconds` - time (in seconds) between processing previous and next batches. You can increase time for reducing queries count to database, but it affects a performance. Default value is `0.1`.
+* `relay.failover` - an instance (or callable singleton class, or proc/lambda) of an event failover. It has to be a string. You can define there exceptions handling/failing events behaviour (see failover.md). By default the library doesn't handle any exceptions arising during an event processing, default failover just throws received exception. Default value is `TransactionalOutbox::Relay::Failover`.
+* `max_runner_retries_count` - max attemps to process topics and spawn workers by event relay runner until it dies. Default value is `5`.
+* `delay_between_worker_set_processor_cycles` - delay (in seconds) between spawn workers cycle (**fetch topics -> try to spawn workers for each of them**). Default value is `1`.

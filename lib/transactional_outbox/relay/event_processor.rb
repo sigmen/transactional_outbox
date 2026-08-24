@@ -18,6 +18,11 @@ module TransactionalOutbox
 
         process_events(events)
       rescue StandardError => e
+        TransactionalOutbox.monitor.publish(
+          TransactionalOutbox::WORKER_EXCEPTIONS_TOTAL_MONITOR_EVENT,
+          { topic:, exception: e.class }
+        )
+
         resolve_failover.call(e, events)
       end
 
@@ -38,7 +43,9 @@ module TransactionalOutbox
 
         db.delete_events(events.map { |x| x[:id] })
 
-        TransactionalOutbox::Relay.monitor.publish("worker.events.processed", { topic:, count: events.size })
+        TransactionalOutbox::Relay.monitor.publish(
+          TransactionalOutbox::WORKER_EVENTS_PROCESSED_MONITOR_EVENT, { topic:, count: events.size }
+        )
 
         config.logger.info("Events have sent to topic #{topic}: #{events.size}")
       end

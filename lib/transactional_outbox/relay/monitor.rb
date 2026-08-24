@@ -21,6 +21,7 @@ module TransactionalOutbox
         notifications.register_event(TransactionalOutbox::WORKER_RUN_MONITOR_EVENT)
         notifications.register_event(TransactionalOutbox::WORKER_EVENTS_PROCESSED_MONITOR_EVENT)
         notifications.register_event(TransactionalOutbox::WORKER_STOPPED_MONITOR_EVENT)
+        notifications.register_event(TransactionalOutbox::WORKER_EXCEPTIONS_TOTAL_MONITOR_EVENT)
       end
     end
   end

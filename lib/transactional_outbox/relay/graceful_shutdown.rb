@@ -19,7 +19,7 @@ module TransactionalOutbox
 
           while shutdown_time + config.shutdown_waiting_time_seconds > Time.now.utc
             if worker_set.all_stopped?
-              TransactionalOutbox::Relay.monitor.publish("runner.stopped")
+              TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::RUNNER_STOPPED_MONITOR_EVENT)
 
               config.logger.info("All workers have stopped.")
 

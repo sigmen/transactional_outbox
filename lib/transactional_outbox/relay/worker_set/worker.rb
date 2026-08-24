@@ -32,7 +32,7 @@ module TransactionalOutbox
         def config = @config ||= TransactionalOutbox.config
 
         def spawn_thread # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-          TransactionalOutbox::Relay.monitor.publish("worker.run", { topic: })
+          TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::WORKER_RUN_MONITOR_EVENT, { topic: })
 
           Thread.new do
             loop do
@@ -48,7 +48,7 @@ module TransactionalOutbox
 
               break if config.test_environment
 
-              sleep(config.wait_between_batches_seconds)
+              sleep(config.relay.wait_between_batches_seconds)
             end
           rescue StandardError => e
             mark_thread_as_stopped
@@ -60,7 +60,7 @@ module TransactionalOutbox
         def mark_thread_as_stopped
           Thread.current[:stopped] = true
 
-          TransactionalOutbox::Relay.monitor.publish("worker.stopped", { topic: })
+          TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::WORKER_STOPPED_MONITOR_EVENT, { topic: })
         end
       end
     end

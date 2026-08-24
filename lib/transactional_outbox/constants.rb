@@ -11,5 +11,6 @@ module TransactionalOutbox
     WORKER_RUN_MONITOR_EVENT = "worker.run"
     WORKER_STOPPED_MONITOR_EVENT = "worker.stopped"
     WORKER_EVENTS_PROCESSED_MONITOR_EVENT = "worker.events.processed"
+    WORKER_EXCEPTIONS_TOTAL_MONITOR_EVENT = "worker.exceptions_total"
   end
 end

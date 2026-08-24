@@ -49,17 +49,17 @@ module TransactionalOutbox
 
   setting :logger
   setting :outbox_table_name, default: "outbox_events"
-  setting :batch_size, default: 20
-  setting :wait_between_batches_seconds, default: 0.1
+  setting :default_event_builder, default: TransactionalOutbox::Event::Builder
   setting :shutdown_waiting_time_seconds, default: 10
   setting :migrations_directory
   setting :test_environment, default: false
-  setting :max_relay_runner_retries_count, default: 5
-  setting :delay_between_worker_set_processor_cycles, default: 1
-  setting :default_event_builder, default: TransactionalOutbox::Event::Builder
 
   setting :relay do
+    setting :batch_size, default: 20
+    setting :wait_between_batches_seconds, default: 0.1
     setting :failover, default: TransactionalOutbox::Relay::Failover
+    setting :max_runner_retries_count, default: 5
+    setting :delay_between_worker_set_processor_cycles, default: 1
   end
 
   setting :db do

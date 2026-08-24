@@ -78,3 +78,21 @@ TransactionalOutbox.configure do |config|
   config.db.connection_data = { client: MyCustomDbClient.new }
 end
 ```
+
+## Default table schema
+
+| attribute              | type                        | default            | nullable | comment                                       |
+|------------------------|-----------------------------|--------------------|----------|-----------------------------------------------|
+| id (PK)                | uuid                        | gen_random_uuid () | false    | ID (Synthetical)                              |
+| aggregate_type         | varchar(255)                | -                  | false    | Source: event config (aggregate_type)         |
+| aggregate_id           | uuid                        | -                  | false    | Source: context[:aggregate_type][:id]         |
+| event_type             | varchar(255)                | -                  | false    | Source: event config (event_type)             |
+| queue                  | text                        | -                  | false    | Source: event config (queue)                  |
+| queue_extra_parameters | jsonb                       | -                  | true     | Source: event config (queue_extra_parameters) |
+| headers                | jsonb                       | -                  | true     | Currently not using                           |
+| payload                | jsonb                       | -                  | true     | Source: transformed payload                   |
+| created_at             | timestamp without time zone | now()              | false    | Source: default value in DB                   |
+
+## Custom outbox table fields
+
+You're free to add any custom fields to outbox table or change it, for start to using it as a part of messages you've to define a new or add it to payload definition (see [events creation](events_creation.md)).

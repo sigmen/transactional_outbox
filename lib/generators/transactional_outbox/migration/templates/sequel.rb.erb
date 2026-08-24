@@ -5,9 +5,9 @@ Sequel.migration do
     run <<-SQL.squish
       CREATE TABLE IF NOT EXISTS <%= TransactionalOutbox.config.outbox_table_name %> (
         id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-        aggregate_type text NOT NULL,
+        aggregate_type varchar(255) NOT NULL,
         aggregate_id uuid NOT NULL,
-        event_type text NOT NULL,
+        event_type varchar(255) NOT NULL,
         queue text NOT NULL,
         queue_extra_parameters jsonb,
         headers jsonb,

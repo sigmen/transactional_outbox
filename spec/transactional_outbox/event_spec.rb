@@ -55,27 +55,37 @@ RSpec.describe TransactionalOutbox::Event do
     define_event(payload_schema, aggregate_type, event_type, queue, event_builder_class, payload_block)
   end
 
-  let(:context) { { id: SecureRandom.uuid, name: "Foo Barovich" } }
+  let(:user_id) { SecureRandom.uuid }
+  let(:context) { { user: { id: user_id, name: "Foo Barovich" } } }
   let(:aggregate_type) { "user" }
   let(:queue) { "test-queue" }
   let(:event_type) { "created" }
   let(:payload_schema) { JSON.load_file("#{Dir.pwd}/spec/fixtures/event_schema.json") }
   let(:event_builder_class) { "TransactionalOutbox::Event::Builder" }
-  let(:payload_block) { ->(context) { { id: context[:id], name: context[:name] } } }
+  let(:payload_block) { ->(context) { { id: context[:user][:id], name: context[:user][:name] } } }
   let(:correct_event_data) do
     {
       queue:,
       queue_extra_parameters: nil,
       aggregate_type:,
+      aggregate_id: user_id,
       event_type:,
       headers: {},
-      payload: { id: context[:id], name: context[:name] }
+      payload: { id: context[:user][:id], name: context[:user][:name] }
     }
   end
 
-  let(:short_payload_block) { ->(context) { { id: context[:id] } } }
+  let(:short_payload_block) { ->(context) { { id: context[:user][:id] } } }
   let(:short_correct_event_data) do
-    { queue:, queue_extra_parameters: nil, aggregate_type:, event_type:, headers: {}, payload: { id: context[:id] } }
+    {
+      queue:,
+      queue_extra_parameters: nil,
+      aggregate_type:,
+      aggregate_id: user_id,
+      event_type:,
+      headers: {},
+      payload: { id: context[:user][:id] }
+    }
   end
 
   describe "#create!" do

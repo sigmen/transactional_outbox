@@ -10,8 +10,10 @@ def define_event(payload_schema, aggregate_type, event_type, queue_name, event_b
     event_builder event_builder_class
 
     context do
-      required(:id).filled(:string)
-      required(:name).filled(:string)
+      required(:user).hash do
+        required(:id).filled(:string)
+        required(:name).filled(:string)
+      end
     end
 
     prepare_payload(&payload_block)

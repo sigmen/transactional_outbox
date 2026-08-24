@@ -19,7 +19,7 @@ The event relay is the process that reads events out of the outbox table and pub
 You can run it using rake task provided by the library (registered automatically for Rails apps):
 
 ```bash
-bundle exec rake relay:run
+bundle exec rake event_relay:run
 ```
 
 It just calls `#TransactionalOutbox::Relay::Runner.start`. Runner publishes the `runner.init` [monitoring](monitoring.md) event, builds a worker set and hands it to the worker-set processor loop. It blocks the current thread/process until it shuts down (see below).

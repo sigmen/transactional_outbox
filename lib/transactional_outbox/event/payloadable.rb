@@ -11,7 +11,7 @@ module TransactionalOutbox
         end
       end
 
-      def payload(&block) = @payload ||= block
+      def prepare_payload(&block) = @payload ||= block
     end
   end
 end

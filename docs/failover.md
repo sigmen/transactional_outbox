@@ -19,7 +19,7 @@ Each worker thread runs an infinite loop that calls events batch processor on ev
 
 ## Writing your own failover
 
-Implement a class (or any object) that responds to `.call(exception, events)` and configure it at [configuration](configuration.md) (**see relay.failover**). The configuration parameter accepts a string with the class name or any callable object (proc/lambda).
+Implement a class (or any object) that responds to `#call(exception, events)` and configure it at [configuration](configuration.md) (**see relay.failover**). The configuration parameter accepts a string with the class name or any callable object (proc/lambda).
 
 A failover only needs to respond to `#call` method which got two arguments:
 
@@ -34,11 +34,9 @@ module Outbox
     def self.call(exception, events)
       ids = events&.map { |e| e[:id] }
 
-      Rails.logger.error("Outbox relay failed for events #{ids.inspect}: #{exception.message}")
+      OutboxEventRepository.new.fail_events_batch(ids)
 
-      OutboxEventRepository.new.fail_events(ids: id)
-
-      # swallow the error so the worker keeps running on the next cycle
+      Sentry.capture_exception(exception)
     end
   end
 end

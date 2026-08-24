@@ -14,7 +14,7 @@ def define_event(payload_schema, aggregate_type, event_type, topic_name, event_b
       required(:name).filled(:string)
     end
 
-    payload(&payload_block)
+    prepare_payload(&payload_block)
   end
 end
 # rubocop:enable Metrics/MethodLength, Metrics/ParameterLists

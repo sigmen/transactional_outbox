@@ -23,24 +23,40 @@ You need to inherit your event class from `TransactionalOutbox::Event`(../lib/tr
 * `event_builder` - an event builder class, see below how to implement it.
 
 Also you can define `context` and `payload` blocks:
-* **required** The `payload` block is needed for define an event payload. Inside this block you need to specify an payload structure. If a block is not defined it returns an input itself.
+* **required** The `prepare_payload` block is needed for define an event payload. Inside this block you need to specify an payload structure. If a block is not defined it returns an input itself.
 * The `context` block is needed for an input validation (attributes which received in `#Event.create!` method). For a correct behaviour you have to define it using [dry-schema](https://hanakai.org/learn/dry/dry-schema) DSL. It'a an optional attribute and if you will put there nothing - nothing will be validated. It raises `TransactionalOutbox::Exceptions::InvalidContextError` error if an input doesn't match with a contract.
 
 ```ruby
-class UserCreatedEvent < TransactionalOutbox::Event
-  aggregate_type "user"
-  event_type "created"
-  topic "users"
-  schema SchemaRegistryCache.get_schema("user")
-  event_builder MyEventBuilder
+module Outbox
+  module Events
+    module User
+      class CreatedEvent < TransactionalOutbox::Event
+        aggregate_type "user"
+        event_type "created"
+        topic "users"
+        schema SchemaRegistryCache.get_schema("user")
+        event_builder MyEventBuilder
 
-  context do
-    required(:id).filled(:string)
-    required(:name).filled(:string)
-  end
+        context do
+          required(:user).hash do
+            required(:id).filled(:string)
+            required(:name).filled(:string)
+          end
+        end
 
-  payload do |context|
-    { id: context[:id], name: context[:name] }
+        prepare_payload do |context|
+          { user: prepare_user(context) }
+        end
+
+        private
+
+        def prepare_user(context)
+          context[:user] => { id:, name: }
+
+          { id:, name:}
+        end
+      end
+    end
   end
 end
 ```
@@ -50,7 +66,7 @@ end
 For create an event you need to call `#create!(context)` on instance of event. When you call it the logic inside the event:
 
 1. Validates `context` against the `context` contract (defined in a `context` block).
-2. Builds the payload using the `payload` block.
+2. Prepare the payload using the `prepare_payload` block.
 3. Validates the payload against `schema`.
 4. Builds the final row via the event builder and inserts it into the outbox table.
 
@@ -63,8 +79,9 @@ class CreateUserService
   def call(params)
     TransactionalOutbox.transaction(UserCreatedEvent) do |event|
       user = User.create!(name: params[:name])
+      context = { user: }
 
-      event.create!(id: user.id, name: user.name)
+      event.create!(context)
     end
   end
 ```

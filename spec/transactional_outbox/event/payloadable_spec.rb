@@ -8,7 +8,7 @@ RSpec.describe TransactionalOutbox::Event::Contextable do
       Class.new do
         extend TransactionalOutbox::Event::Payloadable
 
-        payload do |context|
+        prepare_payload do |context|
           {
             foo: context[:foo],
             bar: "foo"

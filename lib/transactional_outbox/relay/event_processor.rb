@@ -20,7 +20,7 @@ module TransactionalOutbox
       rescue StandardError => e
         TransactionalOutbox::Relay.monitor.publish(
           TransactionalOutbox::WORKER_EXCEPTIONS_TOTAL_MONITOR_EVENT,
-          { topic:, exception: e.class }
+          { topic:, exception: e.class.to_s }
         )
 
         resolve_failover.call(e, events)

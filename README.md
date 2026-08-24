@@ -22,9 +22,13 @@ Or install it yourself as:
 
     $ gem install transactional_outbox
 
+## Architecture
+
+![Architecture](docs/architecture.png)
+
 ## Documentation
 
-[Documentation](./docs)
+[Documentation](docs/contents.md)
 
 ## Contributing
 

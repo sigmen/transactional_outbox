@@ -11,7 +11,7 @@ module TransactionalOutbox
         end
       end
 
-      def prepare_payload(&block) = @payload ||= block
+      def prepare_payload(&block) = @payload ||= block # rubocop:disable Naming/MemoizedInstanceVariableName
     end
   end
 end

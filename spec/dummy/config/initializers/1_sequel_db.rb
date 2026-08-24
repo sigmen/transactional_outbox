@@ -4,7 +4,7 @@ Sequel::Model.db = Sequel.sqlite
 
 Sequel::Model.db.create_table!(:outbox_events) do
   String :id
-  String :topic
+  String :queue
   String :event_type
   String :aggregate_type
   String :aggregate_id

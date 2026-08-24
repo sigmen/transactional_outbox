@@ -6,10 +6,10 @@ module TransactionalOutbox
   class Relay
     class WorkerSet
       class Worker
-        attr_reader :topic, :db, :producer
+        attr_reader :queue, :db, :producer
 
-        def initialize(topic)
-          @topic = topic
+        def initialize(queue)
+          @queue = queue
         end
 
         def run
@@ -32,14 +32,14 @@ module TransactionalOutbox
         def config = @config ||= TransactionalOutbox.config
 
         def spawn_thread # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-          TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::WORKER_RUN_MONITOR_EVENT, { topic: })
+          TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::WORKER_RUN_MONITOR_EVENT, { queue: })
 
           Thread.new do
             loop do
-              TransactionalOutbox::Relay::EventProcessor.new(topic).call
+              TransactionalOutbox::Relay::EventProcessor.new(queue).call
 
               if Thread.current[:shutdown]
-                config.logger.info("Thread for topic #{topic} successfully shutted down")
+                config.logger.info("Thread for queue #{queue} successfully shutted down")
 
                 mark_thread_as_stopped
 
@@ -60,7 +60,7 @@ module TransactionalOutbox
         def mark_thread_as_stopped
           Thread.current[:stopped] = true
 
-          TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::WORKER_STOPPED_MONITOR_EVENT, { topic: })
+          TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::WORKER_STOPPED_MONITOR_EVENT, { queue: })
         end
       end
     end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module TransactionalOutbox
-  class Event
+module Outbox
+  module Events
     class Builder
       def self.build(event_config, payload, _context)
         {

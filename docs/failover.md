@@ -13,7 +13,7 @@
 
 ## Purpose
 
-`TransactionalOutbox::Relay::Failover` is the error handler invoked whenever an [`EventProcessor`](../lib/transactional_outbox/relay/event_processor.rb) fails to process a batch of events for a topic (e.g. the producer can't reach the broker, or the database is unavailable).
+`TransactionalOutbox::Relay::Failover` is the error handler invoked whenever an [`EventProcessor`](../lib/transactional_outbox/relay/event_processor.rb) fails to process a batch of events for a queue (e.g. the producer can't reach the broker, or the database is unavailable).
 
 Each worker thread runs an infinite loop that calls events batch processor on every cycle. Inside event processor everything is wrapped in a `rescue StandardError`, and the raised exception (together with the batch of events being processed) is forwarded to the configured failover. The [default implementation](../transactional_outbox/relay/failover.md) just re-raises the exception.
 

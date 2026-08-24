@@ -28,8 +28,8 @@ It has two adapters by default:
 1. Implement a class that inherits `TransactionalOutbox::Database::Adapters::Interface`. An adapter must implement the following methods (see [`Interface`](../lib/transactional_outbox/database/adapters/interface.rb)):
     * `transaction(*options, &block)` — runs `block` inside a database transaction.
     * `insert_events(attributes)` — bulk-inserts events (an array of hashes).
-    * `fetch_events(topic_name, batch_size)` — returns array of events (hashes) up to `batch_size` rows for `topic_name`. Should lock the selected events (e.g. `FOR UPDATE SKIP LOCKED`) for concurrent workers couldn't pick up the same events.
-    * `fetch_topics` — returns the unique list of topics currently present in the outbox table.
+    * `fetch_events(queue_name, batch_size)` — returns array of events (hashes) up to `batch_size` rows for `queue_name`. Should lock the selected events (e.g. `FOR UPDATE SKIP LOCKED`) for concurrent workers couldn't pick up the same events.
+    * `fetch_queues` — returns the unique list of queues currently present in the outbox table.
     * `delete_events(ids)` — deletes the events by the given ids.
 
 Example:
@@ -46,10 +46,10 @@ module Outbox
 
       def transaction(*options, &block) = table_object.transaction(*options, &block)
       def insert_events(attributes) = table_object.insert(attributes)
-      def fetch_topics = table_object.select(:topic).distinct
+      def fetch_queues = table_object.select(:queue).distinct
 
-      def fetch_events(topic_name, batch_size)
-        table_object.where(topic: topic_name).order(:created_at).lock.skip_locked.limit(batch_size)
+      def fetch_events(queue, batch_size)
+        table_object.where(queue:).order(:created_at).lock.skip_locked.limit(batch_size)
       end
 
       def delete_events(ids) = table_object.delete(id: ids)

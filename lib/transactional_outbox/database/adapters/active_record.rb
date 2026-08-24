@@ -6,15 +6,15 @@ module TransactionalOutbox
       class ActiveRecord < Interface
         def transaction(*options, &) = model.transaction(*options, &)
 
-        def fetch_events(topic, batch_size)
-          model.where(topic:).order(:created_at).limit(batch_size).lock("FOR UPDATE SKIP LOCKED").map do |event|
+        def fetch_events(queue, batch_size)
+          model.where(queue:).order(:created_at).limit(batch_size).lock("FOR UPDATE SKIP LOCKED").map do |event|
             event.attributes.symbolize_keys
           end
         end
 
         def insert_events(attributes) = model.insert_all(attributes)
         def delete_events(ids) = model.where(id: ids).delete_all
-        def fetch_topics = model.select(:topic).distinct.map(&:topic)
+        def fetch_queues = model.select(:queue).distinct.map(&:queue)
 
         private
 

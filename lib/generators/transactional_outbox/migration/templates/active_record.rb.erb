@@ -6,13 +6,14 @@ class CreateOutboxEventsTable < ActiveRecord::Migration[7.0]
       t.string :aggregate_type, null: false
       t.uuid :aggregate_id, null: false
       t.string :event_type, null: false
-      t.string :topic, null: false
+      t.string :queue, null: false
+      t.jsonb :queue_extra_parameters
       t.jsonb :headers
       t.jsonb :payload
       t.datetime :created_at, null: false, default: "now()"
     end
 
-    add_index :<%= TransactionalOutbox.config.outbox_table_name %>, :topic
+    add_index :<%= TransactionalOutbox.config.outbox_table_name %>, :queue
   end
 end
 

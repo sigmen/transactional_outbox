@@ -17,8 +17,8 @@ module TransactionalOutbox
             .tap { |identified_rows| dataset.concat(identified_rows) }
         end
 
-        def fetch_events(topic_name, batch_size) = dataset.select { |row| row[:topic] == topic_name }.first(batch_size)
-        def fetch_topics = dataset.map { |row| row[:topic] }
+        def fetch_events(queue_name, batch_size) = dataset.select { |row| row[:queue] == queue_name }.first(batch_size)
+        def fetch_queues = dataset.map { |row| row[:queue] }
 
         def delete_events(ids)
           ids_map = ids.to_h { |id| [id, true] }

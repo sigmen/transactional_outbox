@@ -10,9 +10,9 @@ module TransactionalOutbox
 
         def transaction(*_options, &) = raise NotImplementedError
         def insert_events(_attributes) = raise NotImplementedError
-        def fetch_events(_topic_name) = raise NotImplementedError
+        def fetch_events(_queue_name) = raise NotImplementedError
         def delete_events(_ids) = raise NotImplementedError
-        def fetch_topics = raise NotImplementedError
+        def fetch_queues = raise NotImplementedError
 
         private
 

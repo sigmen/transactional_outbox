@@ -26,10 +26,10 @@ It just calls `#TransactionalOutbox::Relay::Runner.start`. Runner publishes the 
 
 ## Creating workers
 
-Worker creates once per each topic, each independently fetching, producing and deleting its own batches of events. Workers are created and supervised by [processor](../lib/transactional_outbox/relay/worker_set/processor.rb), which loops forever:
+Worker creates once per each queue, each independently fetching, producing and deleting its own batches of events. Workers are created and supervised by [processor](../lib/transactional_outbox/relay/worker_set/processor.rb), which loops forever:
 
-1. Fetch the current distinct list of topics from the outbox table.
-2. For every topic: create a new worker if none exists yet (`WorkerSet#add_worker`), or try to recover it (by replacing to new one) if it is not died by graceful shutdown.
+1. Fetch the current distinct list of queues from the outbox table.
+2. For every queue: create a new worker if none exists yet (`WorkerSet#add_worker`), or try to recover it (by replacing to new one) if it is not died by graceful shutdown.
 3. Sleep for[relay.delay_between_worker_set_processor_cycles](configuration.md) seconds and repeat.
 
 Creating a worker ([WorkerSet::Worke`](../lib/transactional_outbox/relay/worker_set/worker.rb)) it publishes the `worker.run` monitoring event and spawns a thread that loops calling event processor which fetching a batch (**with row-level locks**), producing it, deleting it, and waiting for the next iteration (see [relay.wait_between_batches_seconds](configuration.md)). Exceptions raised while processing a batch are sent to the configured [failover](failover.md) instead of killing the process outright and send the [worker.exception_total](monitoring.md) monitoring metric. If the processor loop itself raises (e.g. database query fails with error), it's retried in place with an exponential backoff up to [relay.max_runner_retries_count](configuration.md) times before it gives up and starts graceful shutdown.

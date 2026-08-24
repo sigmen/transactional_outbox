@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
-def define_event(payload_schema, aggregate_type, event_type, topic_name, event_builder_class, payload_block)
+def define_event(payload_schema, aggregate_type, event_type, queue_name, event_builder_class, payload_block)
   Class.new(TransactionalOutbox::Event) do
     schema payload_schema
     aggregate_type aggregate_type
     event_type event_type
-    topic topic_name
+    queue queue_name
     event_builder event_builder_class
 
     context do

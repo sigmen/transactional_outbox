@@ -12,8 +12,9 @@ module TransactionalOutbox
     setting :schema
     setting :aggregate_type
     setting :event_type
-    setting :topic
     setting :event_builder
+    setting :queue
+    setting :queue_extra_parameters
 
     config.values.keys.each do |attr|
       define_singleton_method(attr) do |value|

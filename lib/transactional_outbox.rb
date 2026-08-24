@@ -73,10 +73,8 @@ module TransactionalOutbox
   end
 
   class << self
-    def transaction(event)
-      Database.new.transaction do
-        yield(event.new)
-      end
+    def outboxable(&)
+      Database.new.transaction(&)
     end
   end
 end

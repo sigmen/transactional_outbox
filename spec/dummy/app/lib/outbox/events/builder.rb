@@ -6,7 +6,7 @@ module Outbox
       def self.build(event_config, payload, context)
         {
           id: SecureRandom.uuid,
-          topic: event_config.topic,
+          queue: event_config.queue,
           aggregate_type: event_config.aggregate_type,
           aggregate_id: context[:user].id,
           event_type: event_config.event_type,

@@ -8,7 +8,7 @@ module TransactionalOutbox
           @client = client
         end
 
-        def produce_batch(_topic, _batch) = raise NotImplementedError
+        def produce_batch(_queue, _batch) = raise NotImplementedError
 
         private
 

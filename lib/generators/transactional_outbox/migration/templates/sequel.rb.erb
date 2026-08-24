@@ -8,13 +8,14 @@ Sequel.migration do
         aggregate_type text NOT NULL,
         aggregate_id uuid NOT NULL,
         event_type text NOT NULL,
-        topic text NOT NULL,
+        queue text NOT NULL,
+        queue_extra_parameters jsonb,
         headers jsonb,
         payload jsonb,
         created_at timestamp without time zone DEFAULT now() NOT NULL
       );
 
-      CREATE INDEX idx_<%= TransactionalOutbox.config.outbox_table_name %>_topic ON <%= TransactionalOutbox.config.outbox_table_name %>(topic);
+      CREATE INDEX idx_<%= TransactionalOutbox.config.outbox_table_name %>_queue ON <%= TransactionalOutbox.config.outbox_table_name %>(queue);
     SQL
   end
 

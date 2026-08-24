@@ -7,7 +7,7 @@ module Outbox
         schema JSON.load_file("#{Dir.pwd}/spec/fixtures/event_schema.json")
         aggregate_type "user"
         event_type "created"
-        topic "user-topic"
+        queue "user-queue"
 
         context do
           required(:user).value(type?: ::User)

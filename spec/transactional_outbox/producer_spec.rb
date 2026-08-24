@@ -45,9 +45,9 @@ RSpec.describe TransactionalOutbox::Producer do
   end
 
   describe "#produce_batch" do
-    subject { described_class.new.produce_batch(topic, batch) }
+    subject { described_class.new.produce_batch(queue, batch) }
 
-    let(:topic) { "test-topic" }
+    let(:queue) { "test-queue" }
     let(:batch) { [{ "foo" => "bar" }] }
 
     include_context "common cases", :produce_batch

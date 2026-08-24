@@ -3,16 +3,16 @@
 module TransactionalOutbox
   class Relay
     class EventProcessor
-      attr_reader :topic, :db, :producer
+      attr_reader :queue, :db, :producer
 
-      def initialize(topic)
-        @topic = topic
+      def initialize(queue)
+        @queue = queue
         @db = TransactionalOutbox::Database.new
         @producer = TransactionalOutbox::Producer.new
       end
 
       def call
-        events = db.fetch_events(topic, config.relay.batch_size)
+        events = db.fetch_events(queue, config.relay.batch_size)
 
         return if events.empty?
 
@@ -20,7 +20,7 @@ module TransactionalOutbox
       rescue StandardError => e
         TransactionalOutbox::Relay.monitor.publish(
           TransactionalOutbox::WORKER_EXCEPTIONS_TOTAL_MONITOR_EVENT,
-          { topic:, exception: e.class.to_s }
+          { queue:, exception: e.class.to_s }
         )
 
         resolve_failover.call(e, events)
@@ -39,15 +39,15 @@ module TransactionalOutbox
       end
 
       def process_events(events)
-        producer.produce_batch(topic, events)
+        producer.produce_batch(queue, events)
 
         db.delete_events(events.map { |x| x[:id] })
 
         TransactionalOutbox::Relay.monitor.publish(
-          TransactionalOutbox::WORKER_EVENTS_PROCESSED_MONITOR_EVENT, { topic:, count: events.size }
+          TransactionalOutbox::WORKER_EVENTS_PROCESSED_MONITOR_EVENT, { queue:, count: events.size }
         )
 
-        config.logger.info("Events have sent to topic #{topic}: #{events.size}")
+        config.logger.info("Events have sent to queue #{queue}: #{events.size}")
       end
     end
   end

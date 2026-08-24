@@ -3,7 +3,10 @@
 RSpec.describe TransactionalOutbox::Event::Builder do
   subject { described_class.build(event_config, payload, context) }
 
-  let(:event_config) { double(aggregate_type: "test", topic: "test-topic", event_type: "created") }
+  let(:event_config) do
+    double(aggregate_type: "test", queue: "test-queue", queue_extra_parameters: nil, event_type: "created")
+  end
+
   let(:context) { [] }
   let(:payload) { { foo: "bar" } }
   let(:id) { "91e5ed4a-5405-4605-8a8d-e4c9fb7f26be" }
@@ -12,7 +15,8 @@ RSpec.describe TransactionalOutbox::Event::Builder do
     {
       id:,
       aggregate_type: "test",
-      topic: "test-topic",
+      queue: "test-queue",
+      queue_extra_parameters: nil,
       event_type: "created",
       headers: {},
       payload:

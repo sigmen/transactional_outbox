@@ -4,7 +4,7 @@ module TransactionalOutbox
   class Database
     extend Forwardable
 
-    def_delegators :@adapter, :transaction, :insert_events, :fetch_events, :fetch_topics, :delete_events
+    def_delegators :@adapter, :transaction, :insert_events, :fetch_events, :fetch_queues, :delete_events
 
     attr_reader :adapter
 

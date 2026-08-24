@@ -7,8 +7,8 @@ module TransactionalOutbox
         def messages = @messages ||= {}
         def clear_store = @messages = {}
 
-        def produce_batch(topic, events)
-          msg = messages[topic] ||= []
+        def produce_batch(queue, events)
+          msg = messages[queue] ||= []
 
           msg.concat(events)
 

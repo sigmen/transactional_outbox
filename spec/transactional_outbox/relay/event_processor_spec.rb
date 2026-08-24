@@ -3,12 +3,12 @@
 RSpec.describe TransactionalOutbox::Relay::EventProcessor do
   subject(:event_processor) { instance.call }
 
-  let(:topic) { "test-topic" }
-  let(:instance) { described_class.new(topic) }
+  let(:queue) { "test-queue" }
+  let(:instance) { described_class.new(queue) }
   let(:events_count) { 1 }
 
   before do
-    gen_events(topic, events_count)
+    gen_events(queue, events_count)
   end
 
   it "produces messages" do
@@ -26,7 +26,7 @@ RSpec.describe TransactionalOutbox::Relay::EventProcessor do
   it "publishes event to monitor" do
     expect(TransactionalOutbox::Relay.monitor)
       .to receive(:publish)
-      .with("worker.events.processed", { count: events_count, topic: })
+      .with("worker.events.processed", { count: events_count, queue: })
       .once
 
     event_processor
@@ -60,7 +60,7 @@ RSpec.describe TransactionalOutbox::Relay::EventProcessor do
     it "doesnt publish event to monitor" do
       expect(TransactionalOutbox::Relay.monitor)
         .to receive(:publish)
-        .with("worker.exceptions_total", { exception: "StandardError", topic: })
+        .with("worker.exceptions_total", { exception: "StandardError", queue: })
 
       event_processor rescue nil
     end

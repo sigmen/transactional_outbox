@@ -23,17 +23,17 @@ RSpec.describe TransactionalOutbox::Database::Adapters::Sequel do
     end
   end
 
-  describe "#fetch_topics" do
-    subject(:fetch_topics) { described_class.new.fetch_topics }
+  describe "#fetch_queues" do
+    subject(:fetch_queues) { described_class.new.fetch_queues }
 
-    let(:topic) { "test-topic" }
+    let(:queue) { "test-queue" }
 
     before do
-      Sequel::Model(:outbox_events).insert(id: SecureRandom.uuid, topic:)
+      Sequel::Model(:outbox_events).insert(id: SecureRandom.uuid, queue:)
     end
 
-    it "returns topics" do
-      expect(fetch_topics).to match_array [topic]
+    it "returns queues" do
+      expect(fetch_queues).to match_array [queue]
     end
   end
 
@@ -52,17 +52,17 @@ RSpec.describe TransactionalOutbox::Database::Adapters::Sequel do
   end
 
   describe "#fetch_events" do
-    subject(:fetch_events) { described_class.new.fetch_events(topic, 1) }
+    subject(:fetch_events) { described_class.new.fetch_events(queue, 1) }
 
     let(:id) { SecureRandom.uuid }
-    let(:topic) { "test-topic" }
+    let(:queue) { "test-queue" }
     let(:aggregate_id) { SecureRandom.uuid }
     let(:aggregate_type) { "user" }
     let(:event_type) { "created" }
     let(:event1) do
       {
         id:,
-        topic:,
+        queue:,
         aggregate_id:,
         aggregate_type:,
         event_type:,
@@ -75,7 +75,7 @@ RSpec.describe TransactionalOutbox::Database::Adapters::Sequel do
     let(:event2) do
       {
         id: SecureRandom.uuid,
-        topic: "test-topic-2",
+        queue: "test-queue-2",
         aggregate_id: SecureRandom.uuid,
         aggregate_type:,
         event_type:,
@@ -89,7 +89,7 @@ RSpec.describe TransactionalOutbox::Database::Adapters::Sequel do
       Sequel::Model(:outbox_events).multi_insert([event1, event2])
     end
 
-    it "returns events filtered by topic" do
+    it "returns events filtered by queue" do
       ids = fetch_events.map { |e| e[:id] }
 
       expect(ids).to eq [event1[:id]]

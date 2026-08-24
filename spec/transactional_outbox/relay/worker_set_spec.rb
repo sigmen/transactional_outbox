@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe TransactionalOutbox::Relay::WorkerSet do
-  subject(:get_worker) { instance.get_worker(topic) }
-  subject(:add_worker) { instance.add_worker(topic) }
+  subject(:get_worker) { instance.get_worker(queue) }
+  subject(:add_worker) { instance.add_worker(queue) }
 
-  let(:topic) { "test-topic" }
+  let(:queue) { "test-queue" }
   let(:instance) { described_class.new }
   let(:workers) { instance.instance_variable_get(:@workers) }
 
@@ -41,7 +41,7 @@ RSpec.describe TransactionalOutbox::Relay::WorkerSet do
   end
 
   describe "#try_to_recover_worker" do
-    subject(:try_to_recover_worker) { instance.try_to_recover_worker(topic) }
+    subject(:try_to_recover_worker) { instance.try_to_recover_worker(queue) }
 
     let!(:worker) { add_worker }
     let(:thread) { worker.instance_variable_get(:@thread) }

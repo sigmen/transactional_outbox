@@ -13,9 +13,9 @@ module TransactionalOutbox
           @retry_counter = 0
 
           loop do
-            topics = db.fetch_topics
+            queues = db.fetch_queues
 
-            process_topics(topics)
+            process_queues(queues)
 
             break if config.test_environment
 
@@ -40,11 +40,11 @@ module TransactionalOutbox
         def config = @config ||= TransactionalOutbox.config
         def calculate_retry_delay = TransactionalOutbox::ExponentialBackoff.calculate_retry_delay(@retry_counter)
 
-        def process_topics(topics)
-          topics.each do |topic|
-            worker = worker_set.get_worker(topic)
+        def process_queues(queues)
+          queues.each do |queue|
+            worker = worker_set.get_worker(queue)
 
-            worker ? worker_set.try_to_recover_worker(topic) : worker_set.add_worker(topic)
+            worker ? worker_set.try_to_recover_worker(queue) : worker_set.add_worker(queue)
           end
 
           sleep(config.relay.delay_between_worker_set_processor_cycles)

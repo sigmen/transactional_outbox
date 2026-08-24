@@ -18,7 +18,7 @@ module TransactionalOutbox
 
         process_events(events)
       rescue StandardError => e
-        TransactionalOutbox.monitor.publish(
+        TransactionalOutbox::Relay.monitor.publish(
           TransactionalOutbox::WORKER_EXCEPTIONS_TOTAL_MONITOR_EVENT,
           { topic:, exception: e.class }
         )

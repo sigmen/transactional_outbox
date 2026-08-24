@@ -1,3 +1,14 @@
+# Contents
+
+* [Architecture](architecture.md)
+* Configuration
+* [Database](database.md)
+* [Event Relay](event_relay.md)
+* [Events Creation](events_creation.md)
+* [Failover](failover.md)
+* [Message Producing](message_producing.md)
+* [Monitoring](monitoring.md)
+
 # Configuration
 
 Before usage you've to configure the library. The library is not validating any configuration parameters right now but it can be implemented in future.
@@ -33,7 +44,7 @@ end
 * `logger` - an instance of logger, the library uses only `info` and `error` logs levels. The parameter hasn't default value.
 * `migrations_directory` - a path to migrations directory, it uses when migrations are generating. Parameter is not mandatory while you aren't using the migration generator. Parameter hasn't default value.
 * **optional** `outbox_table_name` - the name of outbox table. This parameter uses when the library is trying to query a database or generate migrations. Default value is `outbox_events`.
-* **optional** `default_event_builder` - an event builder class. A builder defines a message broker event structure, you can see example [here](../transactional_outbox/event/bulder.rb). It can be overriden by an event configuration (see events.md). Default value is `TransactionalOutbox::Event::Builder`
+* **optional** `default_event_builder` - an event builder class. A builder defines a message broker event structure, you can see example [here](../transactional_outbox/event/bulder.rb). It can be overriden by an event configuration (see [Events Creation](events_creation.md)). Default value is `TransactionalOutbox::Event::Builder`
 * **optional** `shutdown_waiting_time_seconds` - time (in seconds) to wait of graceful shutdown. When time is over a process doesn't wait while threads will stop at a safe point. Default value is `10`.
 
 ### Database parameters
@@ -71,7 +82,7 @@ end
 
 ### Producer parameters
 
-* `producer.adapter` - a producer adapter key. Possible value by default is only `kafka` (`ruby-kafka` gem). You can define and register your own adapter by instructions [here](producer.md). The parameter is mandatory and hasn't default value.
+* `producer.adapter` - a producer adapter key. Possible value by default is only `kafka` (`ruby-kafka` gem). You can define and register your own adapter by instructions [here](message_producing.md). The parameter is mandatory and hasn't default value.
 * `producer.client` - a client instance. It throws to initializer of an adapter instance. The parameter is mandatory and hasn't default value.
 
 Example configuration for Kafka:

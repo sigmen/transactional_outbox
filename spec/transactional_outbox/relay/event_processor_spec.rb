@@ -58,7 +58,9 @@ RSpec.describe TransactionalOutbox::Relay::EventProcessor do
     end
 
     it "doesnt publish event to monitor" do
-      expect(TransactionalOutbox::Relay.monitor).not_to receive(:publish)
+      expect(TransactionalOutbox::Relay.monitor)
+        .to receive(:publish)
+        .with("worker.exceptions_total", { exception: "StandardError", topic: })
 
       event_processor rescue nil
     end

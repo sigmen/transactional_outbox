@@ -11,18 +11,28 @@
 
 # Events Creation
 
-An event is a class that describes one kind of outbox record: which topic it goes to, what its payload looks like, and how the incoming data should be validated before it's persisted. You declare one subclass per event/message type your application produces.
+`TransactionalOutbox::Event` is a class that describes an event: which topic it goes to, what its payload looks like, and how the incoming data should be validated before it's persisted. You've to declare one event per each event type.
 
 ## Declaring an event
 
-Subclass [`TransactionalOutbox::Event`](../lib/transactional_outbox/event.rb):
+You need to inherit your event class from `TransactionalOutbox::Event`(../lib/transactional_outbox/event.rb). Inside it you've to declare next attributes:
+* **required** `aggregate_type` - a type of an aggregate. Usually it's a snakecased event class name, but you are free to put anything there.
+* **required** `event_type` - a type of an event which can identify what's happened with an aggregate or an entity. We recommend to use synonyms on data manipulations actions like created/updated/deleted, but you are free to put anything there.
+* **required** `topic` - a topic name where you need to put an event at end of processing.
+* `schema` - a schema object for a payload validation. Must be a hash and compatible with [json schema](https://json-schema.org). If a value is `nil` the validation will be skipped otherwise if the payload is not valid it raises `TransactionalOutbox::Exceptions::InvalidPayloadError` error.
+* `event_builder` - an event builder class, see below how to implement it.
+
+Also you can define `context` and `payload` blocks:
+* **required** The `payload` block is needed for define an event payload. Inside this block you need to specify an payload structure. If a block is not defined it returns an input itself.
+* The `context` block is needed for an input validation (attributes which received in `#Event.create!` method). For a correct behaviour you have to define it using [dry-schema](https://hanakai.org/learn/dry/dry-schema) DSL. It'a an optional attribute and if you will put there nothing - nothing will be validated. It raises `TransactionalOutbox::Exceptions::InvalidContextError` error if an input doesn't match with a contract.
 
 ```ruby
 class UserCreatedEvent < TransactionalOutbox::Event
   aggregate_type "user"
   event_type "created"
   topic "users"
-  schema JSON.load_file(Rails.root.join("app/schemas/user_created.json"))
+  schema SchemaRegistryCache.get_schema("user")
+  event_builder MyEventBuilder
 
   context do
     required(:id).filled(:string)
@@ -35,61 +45,32 @@ class UserCreatedEvent < TransactionalOutbox::Event
 end
 ```
 
-* `context` defines a [`dry-validation`](https://dry-rb.org/gems/dry-validation) contract (via `Event::Contextable`) that the hash passed to `create!`/`bulk_create!` must satisfy. It's optional — skip it if you don't need to validate the input.
-* `payload` defines how to turn that context into the event's payload hash (via `Event::Payloadable`), evaluated with `instance_exec`, so you can call other instance methods from inside the block. It's also optional — without it the context itself is used as the payload verbatim.
+## Create an event
 
-## Configuring an event
+For create an event you need to call `#create!(context)` on instance of event. When you call it the logic inside the event:
 
-These are `Dry::Configurable` settings (backed by `setting`), each exposed as a class-level macro:
-
-* `topic` — the topic the event is produced to. Mandatory, no default.
-* `aggregate_type` — an arbitrary string identifying the domain aggregate the event belongs to (e.g. `"user"`, `"order"`). Included in the built row. No default.
-* `event_type` — the event's type within its aggregate (e.g. `"created"`, `"updated"`). No default.
-* **optional** `schema` — a JSON schema (as a hash) the built payload is validated against with [`json-schema`](https://github.com/voxpupuli/json-schema) before saving. If left unset, payload validation is skipped entirely.
-* **optional** `event_builder` — a class name (string) overriding [`default_event_builder`](configuration.md) for this event only. See "Custom builders" below.
-
-## Using events in your application
-
-```ruby
-UserCreatedEvent.new.create!(id: user.id, name: user.name)
-```
-
-`create!(context)`:
-
-1. Validates `context` against the `context` contract, raising `TransactionalOutbox::Exceptions::InvalidContextError` if it doesn't match.
-2. Builds the payload from `context` (via the `payload` block, or the context itself if none was declared).
-3. Validates the payload against `schema`, raising `TransactionalOutbox::Exceptions::InvalidPayloadError` if it doesn't match (skipped when `schema` is unset).
+1. Validates `context` against the `context` contract (defined in a `context` block).
+2. Builds the payload using the `payload` block.
+3. Validates the payload against `schema`.
 4. Builds the final row via the event builder and inserts it into the outbox table.
 
-`bulk_create!(contexts)` does the same for an array of contexts, inserting all the resulting rows in a single insert.
+The event class also implements `bulk_create!(contexts)` method, it does the same but receives array of contexts and using for batch insert.
 
 Both simply insert into the outbox table — they don't open a transaction by themselves. To get the actual transactional-outbox guarantee (the event row committed atomically together with the business data change it describes), wrap the write with `TransactionalOutbox.transaction`:
 
 ```ruby
-TransactionalOutbox.transaction(UserCreatedEvent) do |event|
-  user = User.create!(name: params[:name])
+class CreateUserService
+  def call(params)
+    TransactionalOutbox.transaction(UserCreatedEvent) do |event|
+      user = User.create!(name: params[:name])
 
-  event.create!(id: user.id, name: user.name)
-end
+      event.create!(id: user.id, name: user.name)
+    end
+  end
 ```
 
 `TransactionalOutbox.transaction(event_class)` opens a database transaction through the configured [database adapter](database.md) and yields a new instance of `event_class`. As long as the rest of your business writes inside the block go through the same underlying connection (the `active_record`/`sequel` model configured in `db.connection_data`), they commit or roll back together with the outbox insert.
 
 ### Custom builders
 
-By default, rows are built by [`TransactionalOutbox::Event::Builder`](../lib/transactional_outbox/event/builder.rb):
-
-```ruby
-def self.build(event_config, payload, _context)
-  {
-    id: SecureRandom.uuid,
-    topic: event_config.topic,
-    aggregate_type: event_config.aggregate_type,
-    event_type: event_config.event_type.to_s,
-    headers: {},
-    payload:
-  }
-end
-```
-
-To customize the shape of the row (e.g. add headers), implement your own class with the same `self.build(event_config, payload, context)` signature returning a hash matching your outbox table's columns, and either set it globally via `config.default_event_builder` (see [configuration](configuration.md)) or per event via `event_builder "MyApp::CustomBuilder"`.
+By default, rows are built by [`TransactionalOutbox::Event::Builder`](../lib/transactional_outbox/event/builder.rb). To customize the shape of the row (e.g. add headers or version), implement your own class with the same definition of singleton method `#build` returning a hash matching your outbox table's columns, and either set it globally via [config.default_event_builder](configuration.md)) or per event via `event_builder "MyApp::CustomBuilder"`.

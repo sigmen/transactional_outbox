@@ -46,7 +46,7 @@ module TransactionalOutbox
       @event_builder ||= begin
         klass = config.event_builder || TransactionalOutbox.config.default_event_builder
 
-        Object.const_get(klass)
+        klass.is_a?(String) ? Object.const_get(klass) : klass
       end
     end
 

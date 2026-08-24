@@ -10,8 +10,11 @@ module TransactionalOutbox
           producer.deliver_messages
         end
 
+        def close = client.close
+
         private
 
+        def client = @client ||= ::Kafka.new(**connection_config)
         def producer = @producer ||= client.producer
 
         def buffer_events(topic, events)

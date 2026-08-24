@@ -10,6 +10,7 @@ Sequel.migration do
         event_type varchar(255) NOT NULL,
         queue text NOT NULL,
         queue_extra_parameters jsonb,
+        status varchar(255) NOT NULL DEFAULT '<%= TransactionalOutbox::EVENT_NEW_STATUS %>'
         headers jsonb,
         payload jsonb,
         created_at timestamp without time zone DEFAULT now() NOT NULL

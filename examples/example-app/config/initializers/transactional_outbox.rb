@@ -11,7 +11,7 @@ TransactionalOutbox.configure do |config|
   config.db.connection_data = { model: "OutboxEvent" }
 
   config.producer.adapter = :kafka
-  config.producer.client = Kafka.new(seed_brokers: "localhost:9092")
+  config.producer.connection_config = { seed_brokers: "localhost:9092" }
 
   config.relay.batch_size = 20
   config.relay.wait_between_batches_seconds = 0.1

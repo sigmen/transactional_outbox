@@ -4,7 +4,8 @@ RSpec.describe TransactionalOutbox::Relay::EventProcessor do
   subject(:event_processor) { instance.call }
 
   let(:queue) { "test-queue" }
-  let(:instance) { described_class.new(queue) }
+  let(:producer) { TransactionalOutbox::Producer.new }
+  let(:instance) { described_class.new(queue, producer) }
   let(:events_count) { 1 }
 
   before do
@@ -52,7 +53,7 @@ RSpec.describe TransactionalOutbox::Relay::EventProcessor do
     end
 
     it "calls failover" do
-      expect(TransactionalOutbox.config.relay.failover).to receive(:call).once.and_call_original
+      expect(Object.const_get(TransactionalOutbox.config.relay.failover)).to receive(:call).once.and_call_original
 
       event_processor rescue nil
     end

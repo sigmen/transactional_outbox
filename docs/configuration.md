@@ -27,7 +27,7 @@ TransactionalOutbox.configure do |config|
   config.db.connection_data = { model: "OutboxEvent" }
 
   config.producer.adapter = :kafka
-  config.producer.client = Kafka.new(seed_brokers: "localhost:9092")
+  config.producer.connection_config = { seed_brokers: "localhost:9092" }
 
   config.relay.batch_size = 20
   config.relay.wait_between_batches_seconds = 0.1
@@ -85,7 +85,7 @@ end
 ### Producer parameters
 
 * **required** `producer.adapter` - a producer adapter key. Possible value by default is only `kafka` (`ruby-kafka` gem). You can define and register your own adapter by instructions [here](message_producing.md). The parameter hasn't default value.
-* **required** `producer.client` - a client instance. It throws to initializer of an adapter instance. The parameter hasn't default value.
+* **required** `producer.connection_config` - a connection config. It throws to initializer of an adapter instance. The parameter hasn't default value.
 
 Example configuration for Kafka:
 
@@ -94,7 +94,7 @@ TransactionalOutbox.configure do |config|
   # Some parameters before
 
   config.producer.adapter = :kafka
-  config.producer.client = Kafka.new(seed_brokers: "localhost")
+  config.producer.connection_config = { seed_brokers: "localhost:9092" }
 
   # Some parameters after
 end

@@ -16,6 +16,10 @@ module TransactionalOutbox
         def delete_events(ids) = model.where(id: ids).delete_all
         def fetch_queues = model.select(:queue).distinct.map(&:queue)
 
+        def move_to_processing(ids)
+          model.where(id: ids).update_all(status: TransactionalOutbox::EVENT_PROCESSING_STATUS)
+        end
+
         private
 
         def model = @model ||= Object.const_get(config.db.connection_data[:model])

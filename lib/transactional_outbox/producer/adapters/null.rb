@@ -14,6 +14,8 @@ module TransactionalOutbox
 
           TransactionalOutbox.config.logger.info("Batch produced")
         end
+
+        def close = true
       end
     end
   end

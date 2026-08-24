@@ -6,7 +6,7 @@ module TransactionalOutbox
       def resolve(adapter)
         return container.resolve(adapter) if exists?(adapter)
 
-        raise TransactionalOutbox::UnknownAdapterError, "Unknown producer adapter: #{adapter}"
+        raise TransactionalOutbox::UnknownAdapterError, "Unknown adapter: #{adapter}"
       end
 
       def register(adapter, klass)

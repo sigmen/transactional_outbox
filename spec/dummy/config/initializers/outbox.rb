@@ -12,5 +12,5 @@ TransactionalOutbox.configure do |config|
   config.db.adapter = :sequel
   config.db.connection_data = { db: Sequel::Model.db }
   config.producer.adapter = :kafka
-  config.producer.client = Kafka.new("localhost")
+  config.producer.connection_config = { seed_brokers: "localhost:9092" }
 end

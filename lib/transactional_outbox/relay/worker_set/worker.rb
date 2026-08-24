@@ -10,6 +10,7 @@ module TransactionalOutbox
 
         def initialize(queue)
           @queue = queue
+          @producer = TransactionalOutbox::Producer.new
         end
 
         def run
@@ -36,7 +37,7 @@ module TransactionalOutbox
 
           Thread.new do
             loop do
-              TransactionalOutbox::Relay::EventProcessor.new(queue).call
+              TransactionalOutbox::Relay::EventProcessor.new(queue, producer).call
 
               if Thread.current[:shutdown]
                 config.logger.info("Thread for queue #{queue} successfully shutted down")
@@ -46,7 +47,7 @@ module TransactionalOutbox
                 break
               end
 
-              break if config.test_environment
+              break mark_thread_as_stopped if config.test_environment
 
               sleep(config.relay.wait_between_batches_seconds)
             end
@@ -54,6 +55,8 @@ module TransactionalOutbox
             mark_thread_as_stopped
 
             raise e
+          ensure
+            producer&.close
           end
         end
 

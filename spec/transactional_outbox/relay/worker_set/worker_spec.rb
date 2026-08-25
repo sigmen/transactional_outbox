@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe TransactionalOutbox::Relay::WorkerSet::Worker do
-  let(:worker) { described_class.new(topic) }
-  let(:topic) { "test-topic" }
+  let(:worker) { described_class.new(queue) }
+  let(:queue) { "test-queue" }
 
   describe "#shutdown" do
     subject(:shutdown) { worker.shutdown }

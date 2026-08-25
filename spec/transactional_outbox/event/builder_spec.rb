@@ -3,16 +3,22 @@
 RSpec.describe TransactionalOutbox::Event::Builder do
   subject { described_class.build(event_config, payload, context) }
 
-  let(:event_config) { double(aggregate_type: "test", topic: "test-topic", event_type: "created") }
-  let(:context) { [] }
-  let(:payload) { { foo: "bar" } }
+  let(:event_config) do
+    double(aggregate_type: "user", queue: "test-queue", queue_extra_parameters: nil, event_type: "created")
+  end
+
+  let(:context) { { user: { id: user_id } } }
+  let(:user_id) { SecureRandom.uuid }
+  let(:payload) { { user: { id: user_id, foo: "bar" } } }
   let(:id) { "91e5ed4a-5405-4605-8a8d-e4c9fb7f26be" }
 
   let(:result) do
     {
       id:,
-      aggregate_type: "test",
-      topic: "test-topic",
+      aggregate_type: "user",
+      aggregate_id: user_id,
+      queue: "test-queue",
+      queue_extra_parameters: nil,
       event_type: "created",
       headers: {},
       payload:

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-namespace :relay do
+namespace :event_relay do
   desc "Runs transactional outbox event relay"
   task run: :environment do
     TransactionalOutbox::Relay::Runner.start

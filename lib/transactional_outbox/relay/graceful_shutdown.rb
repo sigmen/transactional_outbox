@@ -4,10 +4,10 @@ module TransactionalOutbox
   class Relay
     class GracefulShutdown
       class << self
-        def call(worker_set)
+        def call(worker_set, exit_code = 0)
           worker_set.stop_workers
 
-          wait_workers(worker_set)
+          call_exit(exit_code) if wait_workers(worker_set)
         end
 
         private
@@ -21,7 +21,7 @@ module TransactionalOutbox
             if worker_set.all_stopped?
               TransactionalOutbox::Relay.monitor.publish(TransactionalOutbox::RUNNER_STOPPED_MONITOR_EVENT)
 
-              config.logger.info("All workers have stopped.")
+              config.logger&.info("All workers have stopped.")
 
               return true
             end
@@ -30,6 +30,12 @@ module TransactionalOutbox
           end
 
           false
+        end
+
+        def call_exit(code)
+          return code if config.test_environment
+
+          exit(code)
         end
       end
     end

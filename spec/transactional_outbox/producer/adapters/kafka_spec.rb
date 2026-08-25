@@ -2,9 +2,9 @@
 
 RSpec.describe TransactionalOutbox::Producer::Adapters::Kafka do
   describe "#produce_batch" do
-    subject(:produce_batch) { described_class.new(kafka).produce_batch(topic, events) }
+    subject(:produce_batch) { described_class.new(connection_config).produce_batch(topic, events) }
 
-    let(:kafka) { Kafka.new(seed_brokers: "localhost") }
+    let(:connection_config) { { seed_brokers: "localhost" } }
     let(:topic) { "test-topic" }
     let(:events) { [{ id: SecureRandom.uuid, payload: "{}" }] }
 

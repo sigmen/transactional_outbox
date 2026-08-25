@@ -4,12 +4,12 @@ module TransactionalOutbox
   class Producer
     extend Forwardable
 
-    def_delegators :@adapter, :produce_batch
+    def_delegators :@adapter, :produce_batch, :close
 
     attr_reader :adapter
 
     def initialize
-      @adapter = TransactionalOutbox::Producer::Adapters.resolve(fetch_adapter).new(fetch_client)
+      @adapter = TransactionalOutbox::Producer::Adapters.resolve(fetch_adapter).new(config.producer.connection_config)
     end
 
     private
@@ -20,12 +20,6 @@ module TransactionalOutbox
       return :null if config.test_environment
 
       config.producer.adapter.to_sym
-    end
-
-    def fetch_client
-      return if config.test_environment
-
-      config.producer.client
     end
   end
 end

@@ -20,9 +20,10 @@ NOTE: There's also a `null` adapter ([`TransactionalOutbox::Producer::Adapters::
 ## Writing your own adapter
 
 1. Implement a class that inherits `TransactionalOutbox::Producer::Adapters::Interface`. An adapter must implement the following method (see [`Interface`](../lib/transactional_outbox/producer/adapters/interface.rb)):
-    * `produce_batch(topic, batch)` — publishes `batch` (an array of events) to `topic`.
+    * `produce_batch(queue, batch)` — publishes `batch` (an array of events) to `queue`.
+    * `close` - closes a connection.
 
-The interface's `initialize` accepts a `client` and exposes it as a private `client` reader.
+The interface's `initialize` accepts a `connection_config` and exposes it as a private `connection_config` reader.
 
 Example:
 
@@ -30,8 +31,8 @@ Example:
 module Outbox
   module Producer
     class CustomAdapter < TransactionalOutbox::Producer::Adapters::Interface
-      def produce_batch(topic, batch)
-        client.publish_many(topic, events.to_json)
+      def produce_batch(queue, batch)
+        client.publish_many(queue, events.to_json)
       end
     end
   end
@@ -51,6 +52,6 @@ TransactionalOutbox::Producer::Adapters.register(:custom_adapter, Outbox::Produc
 ```ruby
 TransactionalOutbox.configure do |config|
   config.producer.adapter = :custom_adapter
-  config.producer.client = MyCustomBrokerClient.new
+  config.producer.connection_config = { seed_brokers: "localhost:9092" }
 end
 ```

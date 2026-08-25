@@ -3,24 +3,34 @@
 Sequel.migration do
   up do
     run <<-SQL.squish
-      CREATE TABLE IF NOT EXISTS <%= TransactionalOutbox.config.outbox_table_name %> (
-        id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-        aggregate_type text NOT NULL,
-        aggregate_id uuid NOT NULL,
-        event_type text NOT NULL,
-        topic text NOT NULL,
-        headers jsonb,
-        payload jsonb,
-        created_at timestamp without time zone DEFAULT now() NOT NULL
+      CREATE TYPE <%= TransactionalOutbox.config.outbox_table_name %>_status_type AS ENUM(
+        '<%= TransactionalOutbox::EVENT_NEW_STATUS %>',
+        '<%= TransactionalOutbox::EVENT_PROCESSING_STATUS %>'
       );
 
-      CREATE INDEX idx_<%= TransactionalOutbox.config.outbox_table_name %>_topic ON <%= TransactionalOutbox.config.outbox_table_name %>(topic);
+      CREATE TABLE IF NOT EXISTS <%= TransactionalOutbox.config.outbox_table_name %> (
+        id uuid NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+        aggregate_type varchar(255) NOT NULL,
+        aggregate_id uuid NOT NULL,
+        event_type varchar(255) NOT NULL,
+        queue text NOT NULL,
+        queue_extra_parameters jsonb,
+        status <%= TransactionalOutbox.config.outbox_table_name %>_status_type NOT NULL DEFAULT '<%= TransactionalOutbox::EVENT_NEW_STATUS %>',
+        headers jsonb,
+        payload jsonb,
+        processing_started_at timestamp without time zone,
+        created_at timestamp without time zone DEFAULT now() NOT NULL,
+        updated_at timestamp without time zone DEFAULT now() NOT NULL
+      );
+
+      CREATE INDEX idx_<%= TransactionalOutbox.config.outbox_table_name %>_queue ON <%= TransactionalOutbox.config.outbox_table_name %>(queue);
     SQL
   end
 
   down do
     run <<-SQL.squish
       DROP TABLE IF EXISTS <%= TransactionalOutbox.config.outbox_table_name %>;
+      DROP TYPE <%= TransactionalOutbox.config.outbox_table_name %>_status_type;
     SQL
   end
 end

@@ -3,27 +3,23 @@
 module TransactionalOutbox
   class Relay
     class EventProcessor
-      attr_reader :topic, :db, :producer
+      attr_reader :queue, :db, :producer
 
-      def initialize(topic)
-        @topic = topic
+      def initialize(queue, producer)
+        @queue = queue
         @db = TransactionalOutbox::Database.new
-        @producer = TransactionalOutbox::Producer.new
+        @producer = producer
       end
 
       def call
-        events = db.fetch_events(topic, config.relay.batch_size)
-
-        return if events.empty?
-
-        process_events(events)
+        process
       rescue StandardError => e
         TransactionalOutbox::Relay.monitor.publish(
           TransactionalOutbox::WORKER_EXCEPTIONS_TOTAL_MONITOR_EVENT,
-          { topic:, exception: e.class.to_s }
+          { queue:, exception: e.class.to_s }
         )
 
-        resolve_failover.call(e, events)
+        resolve_failover.call(e, @events)
       end
 
       private
@@ -33,22 +29,34 @@ module TransactionalOutbox
       def resolve_failover
         configured = config.relay.failover
 
-        return Object.get_const(configured) if configured.is_a?(String)
+        return Object.const_get(configured) if configured.is_a?(String)
 
         configured
       end
 
-      def process_events(events)
-        producer.produce_batch(topic, events)
+      def process # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        db.transaction do
+          @events = db.fetch_events(queue, config.relay.batch_size)
 
-        db.delete_events(events.map { |x| x[:id] })
+          db.move_to_processing(events_ids) unless @events.empty?
+        end
+
+        return if @events.empty?
+
+        producer.produce_batch(queue, @events)
+
+        db.delete_events(events_ids)
+
+        events_count = @events.size
 
         TransactionalOutbox::Relay.monitor.publish(
-          TransactionalOutbox::WORKER_EVENTS_PROCESSED_MONITOR_EVENT, { topic:, count: events.size }
+          TransactionalOutbox::WORKER_EVENTS_PROCESSED_MONITOR_EVENT, { queue:, count: events_count }
         )
 
-        config.logger.info("Events have sent to topic #{topic}: #{events.size}")
+        config.logger&.info("Events have sent to queue #{queue}: #{events_count}")
       end
+
+      def events_ids = @events_ids ||= @events.map { |e| e[:id] }
     end
   end
 end

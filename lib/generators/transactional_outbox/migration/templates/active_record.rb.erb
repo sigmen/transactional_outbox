@@ -1,18 +1,37 @@
 # frozen_string_literal: true
 
 class CreateOutboxEventsTable < ActiveRecord::Migration[7.0]
-  def change
+  def up
+    execute <<-SQL
+      CREATE TYPE <%= TransactionalOutbox.config.outbox_table_name %>_status_type AS ENUM(
+        '<%= TransactionalOutbox::EVENT_NEW_STATUS %>',
+        '<%= TransactionalOutbox::EVENT_PROCESSING_STATUS %>'
+      );
+    SQL
+
     create_table :<%= TransactionalOutbox.config.outbox_table_name %>, id: :uuid do |t|
       t.string :aggregate_type, null: false
       t.uuid :aggregate_id, null: false
       t.string :event_type, null: false
-      t.string :topic, null: false
+      t.string :queue, null: false
+      t.column :status, :<%= TransactionalOutbox.config.outbox_table_name %>_status_type, default: "<%= TransactionalOutbox::EVENT_NEW_STATUS %>", null: false
+      t.jsonb :queue_extra_parameters
       t.jsonb :headers
       t.jsonb :payload
-      t.datetime :created_at, null: false, default: "now()"
+      t.datetime :processing_started_at
+
+      t.timestamps
     end
 
-    add_index :<%= TransactionalOutbox.config.outbox_table_name %>, :topic
+    add_index :<%= TransactionalOutbox.config.outbox_table_name %>, :queue
+  end
+
+  def down
+    drop_table :<%= TransactionalOutbox.config.outbox_table_name %>
+
+    execute <<-SQL
+      DROP TYPE <%= TransactionalOutbox.config.outbox_table_name %>_status_type;
+    SQL
   end
 end
 

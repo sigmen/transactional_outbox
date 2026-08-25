@@ -27,13 +27,13 @@ TransactionalOutbox.configure do |config|
   config.db.connection_data = { model: "OutboxEvent" }
 
   config.producer.adapter = :kafka
-  config.producer.client = Kafka.new(seed_brokers: "localhost:9092")
+  config.producer.connection_config = { seed_brokers: "localhost:9092" }
 
   config.relay.batch_size = 20
   config.relay.wait_between_batches_seconds = 0.1
   config.relay.failover = "TransactionalOutbox::Relay::Failover"
   config.relay.max_runner_retries_count = 5
-  config.relay.delay_between_worker_set_processor_cycles = 1
+  config.relay.delay_between_worker_set_processor_cycles_seconds = 1
 end
 ```
 
@@ -85,7 +85,7 @@ end
 ### Producer parameters
 
 * **required** `producer.adapter` - a producer adapter key. Possible value by default is only `kafka` (`ruby-kafka` gem). You can define and register your own adapter by instructions [here](message_producing.md). The parameter hasn't default value.
-* **required** `producer.client` - a client instance. It throws to initializer of an adapter instance. The parameter hasn't default value.
+* **required** `producer.connection_config` - a connection config. It throws to initializer of an adapter instance. The parameter hasn't default value.
 
 Example configuration for Kafka:
 
@@ -94,7 +94,7 @@ TransactionalOutbox.configure do |config|
   # Some parameters before
 
   config.producer.adapter = :kafka
-  config.producer.client = Kafka.new(seed_brokers: "localhost")
+  config.producer.connection_config = { seed_brokers: "localhost:9092" }
 
   # Some parameters after
 end
@@ -105,5 +105,5 @@ end
 * `relay.batch_size` - a count of events fetching from a database. Default value is `20`.
 * `relay.wait_between_batches_seconds` - time (in seconds) between processing previous and next batches. You can increase time for reducing queries count to database, but it affects a performance. Default value is `0.1`.
 * `relay.failover` - an instance (or callable singleton class, or proc/lambda) of an event failover. It has to be a string. You can define there exceptions handling/failing events behaviour (see failover.md). By default the library doesn't handle any exceptions arising during an event processing, default failover just throws received exception. Default value is `TransactionalOutbox::Relay::Failover`.
-* `max_runner_retries_count` - max attemps to process topics and spawn workers by event relay runner until it dies. Default value is `5`.
-* `delay_between_worker_set_processor_cycles` - delay (in seconds) between spawn workers cycle (**fetch topics -> try to spawn workers for each of them**). Default value is `1`.
+* `max_runner_retries_count` - max attemps to process queues and spawn workers by event relay runner until it dies. Default value is `5`.
+* `delay_between_worker_set_processor_cycles_seconds` - delay (in seconds) between spawn workers cycle (**fetch queues -> try to spawn workers for each of them**). Default value is `1`.

@@ -8,19 +8,44 @@
 
 ## Installation
 
-Add this line to your application's Gemfile:
+1. Add this line to your application's Gemfile:
 
 ```ruby
 gem 'transactional_outbox'
 ```
 
-And then execute:
+2. Execute:
 
     $ bundle install
 
 Or install it yourself as:
 
     $ gem install transactional_outbox
+
+## Using
+
+1. Configure it (see [configuration](docs/configuration.md)).
+
+2. Generate migrations (if you're using Rails) or use template from [here](./lib/generators/transactional_outbox/migration/templates/) and migrate it:
+
+```sh
+$ rails g transactional_outbox:migration
+$ rails db:migrate
+```
+
+3. Define your own events (see [events creation](./docs/events_creation.md)).
+
+4. Run event relay (see [event relay](./docs/event_relay.md)) with rake task (if needed):
+
+```sh
+$ rake event_relay:run
+```
+
+Or run it directly like [here](./examples/example-app/bin/relay):
+
+```ruby
+TransactionalOutbox::Relay::Runner.start
+```
 
 ## Architecture
 

@@ -28,8 +28,8 @@ It has two adapters by default:
 1. Implement a class that inherits `TransactionalOutbox::Database::Adapters::Interface`. An adapter must implement the following methods (see [`Interface`](../lib/transactional_outbox/database/adapters/interface.rb)):
     * `transaction(*options, &block)` — runs `block` inside a database transaction.
     * `insert_events(attributes)` — bulk-inserts events (an array of hashes).
-    * `fetch_events(topic_name, batch_size)` — returns array of events (hashes) up to `batch_size` rows for `topic_name`. Should lock the selected events (e.g. `FOR UPDATE SKIP LOCKED`) for concurrent workers couldn't pick up the same events.
-    * `fetch_topics` — returns the unique list of topics currently present in the outbox table.
+    * `fetch_events(queue_name, batch_size)` — returns array of events (hashes) up to `batch_size` rows for `queue_name`. Should lock the selected events (e.g. `FOR UPDATE SKIP LOCKED`) for concurrent workers couldn't pick up the same events.
+    * `fetch_queues` — returns the unique list of queues currently present in the outbox table.
     * `delete_events(ids)` — deletes the events by the given ids.
 
 Example:
@@ -46,10 +46,10 @@ module Outbox
 
       def transaction(*options, &block) = table_object.transaction(*options, &block)
       def insert_events(attributes) = table_object.insert(attributes)
-      def fetch_topics = table_object.select(:topic).distinct
+      def fetch_queues = table_object.select(:queue).distinct
 
-      def fetch_events(topic_name, batch_size)
-        table_object.where(topic: topic_name).order(:created_at).lock.skip_locked.limit(batch_size)
+      def fetch_events(queue, batch_size)
+        table_object.where(queue:).order(:created_at).lock.skip_locked.limit(batch_size)
       end
 
       def delete_events(ids) = table_object.delete(id: ids)
@@ -78,3 +78,30 @@ TransactionalOutbox.configure do |config|
   config.db.connection_data = { client: MyCustomDbClient.new }
 end
 ```
+
+## Default table schema
+
+| attribute              | type                        | default            | nullable | comment                                       |
+|------------------------|-----------------------------|--------------------|----------|-----------------------------------------------|
+| id (PK)                | uuid                        | gen_random_uuid () | false    | ID (Synthetical)                              |
+| aggregate_type         | varchar(255)                | -                  | false    | Source: event config (aggregate_type)         |
+| aggregate_id           | uuid                        | -                  | false    | Source: context[:aggregate_type][:id]         |
+| event_type             | varchar(255)                | -                  | false    | Source: event config (event_type)             |
+| queue                  | text                        | -                  | false    | Source: event config (queue)                  |
+| queue_extra_parameters | jsonb                       | -                  | true     | Source: event config (queue_extra_parameters) |
+| status                 | ENUM(new, processing)       | -                  | true     | Current status of an event                    |
+| headers                | jsonb                       | -                  | true     | Currently not using                           |
+| payload                | jsonb                       | -                  | true     | Source: transformed payload                   |
+| processing_started_at  | timestamp without time zone | now()              | false    | Source: event processor                       |
+| created_at             | timestamp without time zone | now()              | false    | Source: default value in DB                   |
+| updated_at             | timestamp without time zone | now()              | false    | Source: default value in DB                   |
+
+## Status model
+
+An event has own status model includes two statuses: new and processing:
+* `new` - a status specified in an event by default on creation.
+* `processing` - a status which specified when a batch of events takes by an event processor. This status has an outdating time configurated by [relay.processing_events_claim_timeout_seconds](configuration.md) and based on processing_started_at field, after this time an event will be taken by the event processor again.
+
+## Custom outbox table fields
+
+You're free to add any custom fields to outbox table or change it, for start to using it as a part of messages you've to define a new or add it to payload definition (see [events creation](events_creation.md)).

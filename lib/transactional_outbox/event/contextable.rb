@@ -3,8 +3,6 @@
 module TransactionalOutbox
   class Event
     module Contextable
-      attr_reader :context_schema
-
       def self.extended(klass)
         klass.define_method(:validate_context!) do |params|
           ctx_schema = self.class.instance_variable_get(:@__context_schema__)

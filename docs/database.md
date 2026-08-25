@@ -89,9 +89,18 @@ end
 | event_type             | varchar(255)                | -                  | false    | Source: event config (event_type)             |
 | queue                  | text                        | -                  | false    | Source: event config (queue)                  |
 | queue_extra_parameters | jsonb                       | -                  | true     | Source: event config (queue_extra_parameters) |
+| status                 | ENUM(new, processing)       | -                  | true     | Current status of an event                    |
 | headers                | jsonb                       | -                  | true     | Currently not using                           |
 | payload                | jsonb                       | -                  | true     | Source: transformed payload                   |
+| processing_started_at  | timestamp without time zone | now()              | false    | Source: event processor                       |
 | created_at             | timestamp without time zone | now()              | false    | Source: default value in DB                   |
+| updated_at             | timestamp without time zone | now()              | false    | Source: default value in DB                   |
+
+## Status model
+
+An event has own status model includes two statuses: new and processing:
+* `new` - a status specified in an event by default on creation.
+* `processing` - a status which specified when a batch of events takes by an event processor. This status has an outdating time configurated by [relay.processing_events_claim_timeout_seconds](configuration.md) and based on processing_started_at field, after this time an event will be taken by the event processor again.
 
 ## Custom outbox table fields
 

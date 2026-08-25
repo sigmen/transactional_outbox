@@ -33,7 +33,7 @@ TransactionalOutbox.configure do |config|
   config.relay.wait_between_batches_seconds = 0.1
   config.relay.failover = "TransactionalOutbox::Relay::Failover"
   config.relay.max_runner_retries_count = 5
-  config.relay.delay_between_worker_set_processor_cycles = 1
+  config.relay.delay_between_worker_set_processor_cycles_seconds = 1
 end
 ```
 
@@ -106,4 +106,4 @@ end
 * `relay.wait_between_batches_seconds` - time (in seconds) between processing previous and next batches. You can increase time for reducing queries count to database, but it affects a performance. Default value is `0.1`.
 * `relay.failover` - an instance (or callable singleton class, or proc/lambda) of an event failover. It has to be a string. You can define there exceptions handling/failing events behaviour (see failover.md). By default the library doesn't handle any exceptions arising during an event processing, default failover just throws received exception. Default value is `TransactionalOutbox::Relay::Failover`.
 * `max_runner_retries_count` - max attemps to process queues and spawn workers by event relay runner until it dies. Default value is `5`.
-* `delay_between_worker_set_processor_cycles` - delay (in seconds) between spawn workers cycle (**fetch queues -> try to spawn workers for each of them**). Default value is `1`.
+* `delay_between_worker_set_processor_cycles_seconds` - delay (in seconds) between spawn workers cycle (**fetch queues -> try to spawn workers for each of them**). Default value is `1`.

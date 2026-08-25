@@ -40,7 +40,7 @@ module TransactionalOutbox
               TransactionalOutbox::Relay::EventProcessor.new(queue, producer).call
 
               if Thread.current[:shutdown]
-                config.logger.info("Thread for queue #{queue} successfully shutted down")
+                config.logger&.info("Thread for queue #{queue} successfully shutted down")
 
                 mark_thread_as_stopped
 

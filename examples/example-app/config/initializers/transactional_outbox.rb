@@ -17,7 +17,7 @@ TransactionalOutbox.configure do |config|
   config.relay.wait_between_batches_seconds = 0.1
   config.relay.failover = "Outbox::Failover"
   config.relay.max_runner_retries_count = 5
-  config.relay.delay_between_worker_set_processor_cycles = 1
+  config.relay.delay_between_worker_set_processor_cycles_seconds = 1
 end
 
 Rails.application.config.after_initialize do

@@ -25,24 +25,16 @@ module TransactionalOutbox
         def start_relay(worker_set) = TransactionalOutbox::Relay::WorkerSet::Processor.new(worker_set).call
         def config = @config ||= TransactionalOutbox.config
 
-        def start_graceful_shutdown(worker_set)
+        def start_graceful_shutdown(worker_set, exit_code)
           return unless worker_set
 
-          TransactionalOutbox::Relay::GracefulShutdown.call(worker_set)
-        end
-
-        def call_exit(code)
-          return true if config.test_environment
-
-          exit(code)
+          TransactionalOutbox::Relay::GracefulShutdown.call(worker_set, exit_code)
         end
 
         def shutdown(exception, worker_set, exit_code)
-          config.logger.info("Received exception: #{exception}. Shutting down...")
+          config.logger&.info("Received exception: #{exception}. Shutting down...")
 
-          start_graceful_shutdown(worker_set)
-
-          call_exit(exit_code)
+          start_graceful_shutdown(worker_set, exit_code)
         end
       end
     end

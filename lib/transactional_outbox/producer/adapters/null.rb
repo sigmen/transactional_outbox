@@ -3,7 +3,7 @@
 module TransactionalOutbox
   class Producer
     class Adapters
-      class Null < Interface
+      class Null < Base
         def messages = @messages ||= {}
         def clear_store = @messages = {}
 
@@ -12,7 +12,7 @@ module TransactionalOutbox
 
           msg.concat(events)
 
-          TransactionalOutbox.config.logger.info("Batch produced")
+          TransactionalOutbox.config.logger&.info("Batch produced")
         end
 
         def close = true

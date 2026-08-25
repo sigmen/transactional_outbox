@@ -20,8 +20,6 @@ module TransactionalOutbox
         )
 
         resolve_failover.call(e, @events)
-      ensure
-        producer&.close
       end
 
       private
@@ -40,10 +38,10 @@ module TransactionalOutbox
         db.transaction do
           @events = db.fetch_events(queue, config.relay.batch_size)
 
-          return if @events.empty?
-
-          db.move_to_processing(events_ids)
+          db.move_to_processing(events_ids) unless @events.empty?
         end
+
+        return if @events.empty?
 
         producer.produce_batch(queue, @events)
 
@@ -55,7 +53,7 @@ module TransactionalOutbox
           TransactionalOutbox::WORKER_EVENTS_PROCESSED_MONITOR_EVENT, { queue:, count: events_count }
         )
 
-        config.logger.info("Events have sent to queue #{queue}: #{events_count}")
+        config.logger&.info("Events have sent to queue #{queue}: #{events_count}")
       end
 
       def events_ids = @events_ids ||= @events.map { |e| e[:id] }

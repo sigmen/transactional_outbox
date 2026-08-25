@@ -12,12 +12,12 @@ require "securerandom"
 require_relative "transactional_outbox/version"
 require_relative "transactional_outbox/adapters_container"
 require_relative "transactional_outbox/database/adapters"
-require_relative "transactional_outbox/database/adapters/interface"
+require_relative "transactional_outbox/database/adapters/base"
 require_relative "transactional_outbox/database/adapters/null"
 require_relative "transactional_outbox/database/adapters/active_record"
 require_relative "transactional_outbox/database/adapters/sequel"
 require_relative "transactional_outbox/producer/adapters"
-require_relative "transactional_outbox/producer/adapters/interface"
+require_relative "transactional_outbox/producer/adapters/base"
 require_relative "transactional_outbox/producer/adapters/null"
 require_relative "transactional_outbox/producer/adapters/kafka"
 require_relative "transactional_outbox/constants"
@@ -59,7 +59,8 @@ module TransactionalOutbox
     setting :wait_between_batches_seconds, default: 0.1
     setting :failover, default: "TransactionalOutbox::Relay::Failover"
     setting :max_runner_retries_count, default: 5
-    setting :delay_between_worker_set_processor_cycles, default: 1
+    setting :delay_between_worker_set_processor_cycles_seconds, default: 1
+    setting :processing_events_claim_timeout_seconds, default: 300
   end
 
   setting :db do

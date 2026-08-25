@@ -3,7 +3,7 @@
 module TransactionalOutbox
   class Producer
     class Adapters
-      class Kafka < Interface
+      class Kafka < Base
         def produce_batch(topic, events)
           buffer_events(topic, events)
 
